@@ -1,18 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     tools:context="rstead.bgoff.mshultz.therecipebook.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <view
+        android:id="@+id/view2"
+        class="rstead.bgoff.mshultz.therecipebook.RecipeView"
+        id="@+id/view2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignLeft="@+id/view4"
+        android:layout_alignStart="@+id/view4"
+        android:layout_alignTop="@+id/view"
+        app:exampleDrawable="@drawable/beef"
+        app:exampleString="Beef" />
 
-</android.support.constraint.ConstraintLayout>
+    <view
+        android:id="@+id/view6"
+        class="rstead.bgoff.mshultz.therecipebook.RecipeView"
+        id="@+id/view2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignLeft="@+id/view2"
+        android:layout_alignStart="@+id/view2"
+        android:layout_alignTop="@+id/view5"
+        app:exampleDrawable="@drawable/beef"
+        app:exampleString="Beef" />
+
+    <view
+        android:id="@+id/view3"
+        class="rstead.bgoff.mshultz.therecipebook.RecipeView"
+        id="@+id/view2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        app:exampleDrawable="@drawable/beef"
+        app:exampleString="Beef" />
+
+    <view
+        android:id="@+id/view"
+        class="rstead.bgoff.mshultz.therecipebook.RecipeView"
+        id="@+id/view2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignLeft="@+id/view3"
+        android:layout_alignStart="@+id/view3"
+        android:layout_below="@+id/view3"
+        android:layout_marginTop="18dp"
+        app:exampleDrawable="@drawable/beef"
+        app:exampleString="Beef" />
+
+    <view
+        android:id="@+id/view5"
+        class="rstead.bgoff.mshultz.therecipebook.RecipeView"
+        id="@+id/view2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignLeft="@+id/view"
+        android:layout_alignStart="@+id/view"
+        android:layout_below="@+id/view"
+        android:layout_marginTop="16dp"
+        app:exampleDrawable="@drawable/beef"
+        app:exampleString="Beef" />
+
+    <view
+        android:id="@+id/view4"
+        class="rstead.bgoff.mshultz.therecipebook.RecipeView"
+        id="@+id/view2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="26dp"
+        android:layout_marginRight="26dp"
+        android:layout_toLeftOf="@+id/view"
+        android:layout_toStartOf="@+id/view"
+        app:exampleDrawable="@drawable/beef"
+        app:exampleString="Beef" />
+
+</RelativeLayout>
