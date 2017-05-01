@@ -23,6 +23,11 @@ public class DownloadMaterial extends AsyncTask<String, Void, String> {
     //Regex Pattern for main page:
     //(?s)grid-col__rec-image" data-lazy-load data-original-src="([\w:\-\/\.\?\=\&\;]*)".+?<h3\sclass="grid\-col__h3 grid\-col__h3\-\-recipe\-grid">.+?\s*([\w\d' ]*).+?<a href="([\w\d\/\-]*)
 
+    //Regex Pattern for ingredients on recipe page:
+    //itemprop=\"ingredients\">(.+?)<\/span>
+
+    //Regex Pattern for list of directions:
+    //recipe-directions__list--item">(.+?)<\/span>
     @Override
     protected String doInBackground(String... params) {
         String result = "";
