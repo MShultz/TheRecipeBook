@@ -17,12 +17,13 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 @TargetApi(25)
 public class MainActivity extends AppCompatActivity {
-
+    DatabaseHandler recipeDB;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DisplayMetrics metrics = new DisplayMetrics();
+        this.setRecipeDB(getDatabase());
+DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         float den = metrics.density;
         int recipeSize = (int)(150 * den);
@@ -56,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
             recipe.setcontent("BEEF");
             recipe.setsrcImage(getDrawable(R.drawable.beef));
             currTab.addView(recipe);
-        }
+        }    }
+    private DatabaseHandler getDatabase() {
+        return new DatabaseHandler(this.openOrCreateDatabase(DatabaseHandler.DB_NAME, MODE_PRIVATE, null));
+    }
+
+    public void setRecipeDB(DatabaseHandler recipeDB) {
+        this.recipeDB = recipeDB;
     }
 }
