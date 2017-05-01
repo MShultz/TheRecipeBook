@@ -14,8 +14,8 @@ import android.view.View;
  * TODO: document your custom view class.
  */
 public class RecipeView extends View {
-    private String mExampleString = "Default"; // TODO: use a default from R.string...
-    private Drawable mExampleDrawable;
+    private String contentText = "Default"; // TODO: use a default from R.string...
+    private Drawable srcImage;
 
     private TextPaint mTextPaint;
     private float mTextWidth;
@@ -41,15 +41,15 @@ public class RecipeView extends View {
         final TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.RecipeView, defStyle, 0);
 
-        mExampleString = a.getString(
-                R.styleable.RecipeView_exampleString);
+        contentText = a.getString(
+                R.styleable.RecipeView_content) == null ?  contentText : a.getString(R.styleable.RecipeView_content);
         // Use getDimensionPixelSize or getDimensionPixelOffset when dealing with
         // values that should fall on pixel boundaries.
 
-        if (a.hasValue(R.styleable.RecipeView_exampleDrawable)) {
-            mExampleDrawable = a.getDrawable(
-                    R.styleable.RecipeView_exampleDrawable);
-            mExampleDrawable.setCallback(this);
+        if (a.hasValue(R.styleable.RecipeView_srcImage)) {
+            srcImage = a.getDrawable(
+                    R.styleable.RecipeView_srcImage);
+            srcImage.setCallback(this);
         }
 
         a.recycle();
@@ -64,7 +64,7 @@ public class RecipeView extends View {
     }
 
     private void invalidateTextPaintAndMeasurements() {
-        mTextWidth = mTextPaint.measureText(mExampleString);
+        mTextWidth = mTextPaint.measureText(contentText);
 
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         mTextHeight = fontMetrics.bottom;
@@ -84,18 +84,18 @@ public class RecipeView extends View {
         int contentWidth = getWidth() - paddingLeft - paddingRight;
         int contentHeight = getHeight() - paddingTop - paddingBottom;
 
-        if (mExampleDrawable != null) {
-            mExampleDrawable.setBounds(paddingLeft, paddingTop,
+        //if (srcImage != null) {
+            srcImage.setBounds(paddingLeft, paddingTop,
                     paddingLeft + contentWidth, paddingTop + contentHeight);
-            mExampleDrawable.draw(canvas);
-        }
+            srcImage.draw(canvas);
+        //}
 
-       mTextPaint.setColor(Color.WHITE);
-
+        mTextPaint.setColor(Color.WHITE);
+        mTextPaint.setTextSize(84f);
         // Draw the text.
-        canvas.drawText(mExampleString,
-                paddingLeft + (contentWidth - mTextWidth) / 2,
-                paddingTop + (contentHeight + mTextHeight) / 2,
+        canvas.drawText(contentText,
+                (paddingLeft + (contentWidth - mTextWidth)) / 2,
+                (paddingTop + (contentHeight + mTextHeight)) / 2,
                 mTextPaint);
     }
 
@@ -104,18 +104,18 @@ public class RecipeView extends View {
      *
      * @return The example string attribute value.
      */
-    public String getExampleString() {
-        return mExampleString;
+    public String getcontent() {
+        return contentText;
     }
 
     /**
      * Sets the view's example string attribute value. In the example view, this string
      * is the text to draw.
      *
-     * @param exampleString The example string attribute value to use.
+     * @param content The example string attribute value to use.
      */
-    public void setExampleString(String exampleString) {
-        mExampleString = exampleString;
+    public void setcontent(String content) {
+        contentText = content;
         invalidateTextPaintAndMeasurements();
     }
 
@@ -124,17 +124,17 @@ public class RecipeView extends View {
      *
      * @return The example drawable attribute value.
      */
-    public Drawable getExampleDrawable() {
-        return mExampleDrawable;
+    public Drawable getsrcImage() {
+        return srcImage;
     }
 
     /**
      * Sets the view's example drawable attribute value. In the example view, this drawable is
      * drawn above the text.
      *
-     * @param exampleDrawable The example drawable attribute value to use.
+     * @param srcImage The example drawable attribute value to use.
      */
-    public void setExampleDrawable(Drawable exampleDrawable) {
-        mExampleDrawable = exampleDrawable;
+    public void setsrcImage(Drawable srcImage) {
+        this.srcImage = srcImage;
     }
 }
