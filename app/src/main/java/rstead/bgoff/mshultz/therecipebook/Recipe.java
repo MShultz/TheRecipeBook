@@ -18,6 +18,16 @@ public class Recipe {
 
     }
 
+    public Recipe(String name, String imageLink, String ingredients, String description, String notes) {
+        this.setId(id);
+        this.setName(name);
+        this.setImageLink(imageLink);
+        this.setIngredients(ingredients);
+        this.setDescription(description);
+        this.setNotes(notes);
+
+    }
+
     public int getId() {
         return id;
     }
