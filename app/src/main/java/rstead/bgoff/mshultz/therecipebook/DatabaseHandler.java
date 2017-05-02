@@ -41,7 +41,7 @@ public class DatabaseHandler {
     }
 
 
-    public void setRecipeBookDatabase(SQLiteDatabase recipeBookDatabase) {
+    private void setRecipeBookDatabase(SQLiteDatabase recipeBookDatabase) {
         this.recipeBookDatabase = recipeBookDatabase;
     }
 
@@ -77,7 +77,7 @@ public class DatabaseHandler {
 
     }
 
-    public ContentValues getRecipeContentValues(Recipe recipe) {
+    private ContentValues getRecipeContentValues(Recipe recipe) {
         ContentValues recipeValues = new ContentValues();
         recipeValues.put(NAME_COL, recipe.getName());
         recipeValues.put(IMAGE_COL, recipe.getImageLink());
@@ -101,7 +101,8 @@ public class DatabaseHandler {
     }
 
     public Recipe getRecipe(int pk) {
-        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM" + TABLE_NAME + " WHERE " + PK_ID + " = " + pk, null);
+        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + PK_ID + " = " + pk, null);
+        cursor.moveToFirst();
         return createRecipe(cursor);
     }
 }
