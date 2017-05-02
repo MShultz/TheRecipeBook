@@ -27,10 +27,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String EXTRA_IMAGE = "rstead.bgoff.mshultz.therecipebook.IMAGE";
     private static final String EXTRA_LINK = "rstead.bgoff.mshultz.therecipebook.LINK";
     private static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
-    private final String COMPLETE_PATTERN = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\".+?<h3\\sclass=\"grid\\-col__h3 grid\\-col__h3\\-\\-recipe\\-grid\">.+?\\s*([\\w\\d'\\s]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)";
+    private final String COMPLETE_PATTERN = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\" (?!alt=\"Cook\").+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
     private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
     private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
-    private final String TIPS_REGEX = "(?s)Footnotes.+?Tip.+?<li>(.+?)<\\/li>";
+    private final String TIPS_REGEX = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
 
 
    // private Pattern ingredientPattern, directionPattern, tipPattern;
@@ -171,10 +171,6 @@ public class MainActivity extends AppCompatActivity {
     private String getTipsStringFromPage(String pageContent) {
         Pattern tipPattern = Pattern.compile(TIPS_REGEX);
         Matcher tipsMatcher = tipPattern.matcher(pageContent);
-
-        String tipsRegex = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
-        Pattern tipsPattern = Pattern.compile(tipsRegex);
-        Matcher tipsMatcher = tipsPattern.matcher(pageContent);
 
         ArrayList<String> tips = new ArrayList<>();
         StringBuilder tipString = new StringBuilder();
