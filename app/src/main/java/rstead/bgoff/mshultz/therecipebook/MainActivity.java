@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
     private String getTipsStringFromPage(String pageContent) {
         String tipsString = "";
 
-        String tipsRegex = "(?s)Footnotes.+?Tip.+?<li>(.+?)<\\/li>";
+        String tipsRegex = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
         Pattern tipsPattern = Pattern.compile(tipsRegex);
         Matcher tipsMatcher = tipsPattern.matcher(pageContent);
 
