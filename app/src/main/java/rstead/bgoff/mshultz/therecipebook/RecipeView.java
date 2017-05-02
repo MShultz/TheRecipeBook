@@ -16,6 +16,9 @@ import android.view.View;
 public class RecipeView extends View {
     private String contentText = "Default"; // TODO: use a default from R.string...
     private Drawable srcImage;
+    private int recipeKey;
+    private boolean isWeb;
+    private String link;
 
     private TextPaint mTextPaint;
     private float mTextWidth;
@@ -42,7 +45,7 @@ public class RecipeView extends View {
                 attrs, R.styleable.RecipeView, defStyle, 0);
 
         contentText = a.getString(
-                R.styleable.RecipeView_content) == null ?  contentText : a.getString(R.styleable.RecipeView_content);
+                R.styleable.RecipeView_content) == null ? contentText : a.getString(R.styleable.RecipeView_content);
         // Use getDimensionPixelSize or getDimensionPixelOffset when dealing with
         // values that should fall on pixel boundaries.
 
@@ -74,8 +77,6 @@ public class RecipeView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // TODO: consider storing these as member variables to reduce
-        // allocations per draw cycle.
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
         int paddingRight = getPaddingRight();
@@ -84,11 +85,9 @@ public class RecipeView extends View {
         int contentWidth = getWidth() - paddingLeft - paddingRight;
         int contentHeight = getHeight() - paddingTop - paddingBottom;
 
-        //if (srcImage != null) {
-            srcImage.setBounds(paddingLeft, paddingTop,
-                    paddingLeft + contentWidth, paddingTop + contentHeight);
-            srcImage.draw(canvas);
-        //}
+        srcImage.setBounds(paddingLeft, paddingTop,
+                paddingLeft + contentWidth, paddingTop + contentHeight);
+        srcImage.draw(canvas);
 
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTextSize(84f);
@@ -99,42 +98,45 @@ public class RecipeView extends View {
                 mTextPaint);
     }
 
-    /**
-     * Gets the example string attribute value.
-     *
-     * @return The example string attribute value.
-     */
-    public String getcontent() {
+    public String getContent() {
         return contentText;
     }
 
-    /**
-     * Sets the view's example string attribute value. In the example view, this string
-     * is the text to draw.
-     *
-     * @param content The example string attribute value to use.
-     */
-    public void setcontent(String content) {
+    public void setContent(String content) {
         contentText = content;
         invalidateTextPaintAndMeasurements();
     }
 
-    /**
-     * Gets the example drawable attribute value.
-     *
-     * @return The example drawable attribute value.
-     */
-    public Drawable getsrcImage() {
+    public void setRecipeKey(int id) {
+        recipeKey = id;
+    }
+
+    public int getRecipeKey() {
+        return recipeKey;
+    }
+
+    public Drawable getSrcImage() {
         return srcImage;
     }
 
-    /**
-     * Sets the view's example drawable attribute value. In the example view, this drawable is
-     * drawn above the text.
-     *
-     * @param srcImage The example drawable attribute value to use.
-     */
     public void setsrcImage(Drawable srcImage) {
         this.srcImage = srcImage;
     }
+
+    public void setIsWeb(boolean val){
+        isWeb = val;
+    }
+
+    public boolean isWeb(){
+        return isWeb;
+    }
+
+    public String getLink(){
+        return link;
+    }
+
+    public void setLink(String input){
+        link = input;
+    }
+
 }
