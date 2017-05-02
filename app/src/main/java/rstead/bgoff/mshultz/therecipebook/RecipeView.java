@@ -1,18 +1,25 @@
 package rstead.bgoff.mshultz.therecipebook;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+
+import org.w3c.dom.Text;
 
 /**
  * TODO: document your custom view class.
  */
+@TargetApi(25)
 public class RecipeView extends View {
     private String contentText = "Default"; // TODO: use a default from R.string...
     private Drawable srcImage;
@@ -60,7 +67,7 @@ public class RecipeView extends View {
         // Set up a default TextPaint object
         mTextPaint = new TextPaint();
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextAlign(Paint.Align.LEFT);
+        //mTextPaint.setTextAlign(Paint.Align.LEFT);
 
         // Update TextPaint and text measurements from attributes
         invalidateTextPaintAndMeasurements();
@@ -84,18 +91,48 @@ public class RecipeView extends View {
 
         int contentWidth = getWidth() - paddingLeft - paddingRight;
         int contentHeight = getHeight() - paddingTop - paddingBottom;
-
+        srcImage = srcImage == null ? getResources().getDrawable(R.drawable.ic_action_restaurant_light) : srcImage;
         srcImage.setBounds(paddingLeft, paddingTop,
-                paddingLeft + contentWidth, paddingTop + contentHeight);
+               paddingLeft + contentWidth, paddingTop + contentHeight);
         srcImage.draw(canvas);
 
+        Paint rectColor = new Paint();
+        rectColor.setColor(Color.argb(150, 80, 80, 80));
+        canvas.drawRoundRect(contentWidth - 25, contentHeight - 25, 25, 25, 10, 10, rectColor);
+
+        //contentText = "The Best Georgia Chicken Ever!";
+
         mTextPaint.setColor(Color.WHITE);
-        mTextPaint.setTextSize(84f);
+        mTextPaint.setTextSize(42f);
+        mTextPaint.setFakeBoldText(true);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+
+        centerText();
+
+        Log.e("TextCenter", contentText);
         // Draw the text.
-        canvas.drawText(contentText,
-                (paddingLeft + (contentWidth - mTextWidth)) / 2,
-                (paddingTop + (contentHeight + mTextHeight)) / 2,
-                mTextPaint);
+        float x = ((paddingLeft + (contentWidth - mTextWidth)) / 2) + 20;
+        float y = ((paddingTop + (contentHeight + mTextHeight)) / 2) - 50;
+        for (String s : contentText.split("\n")) {
+
+            canvas.drawText(s.trim(), x, y, mTextPaint);
+            y += mTextPaint.descent() - mTextPaint.ascent();
+        }
+    }
+
+    private void centerText() {
+        String[] contents = contentText.split(" ");
+        contentText = "";
+        int spaceCount = 0;
+        for (int i = 0; i < contents.length; i++) {
+            if (spaceCount == 1) {
+                contentText += contents[i] + "\n";
+                spaceCount = 0;
+            } else {
+                contentText += contents[i] + " ";
+                spaceCount++;
+            }
+        }
     }
 
     public String getContent() {
@@ -123,19 +160,19 @@ public class RecipeView extends View {
         this.srcImage = srcImage;
     }
 
-    public void setIsWeb(boolean val){
+    public void setIsWeb(boolean val) {
         isWeb = val;
     }
 
-    public boolean isWeb(){
+    public boolean isWeb() {
         return isWeb;
     }
 
-    public String getLink(){
+    public String getLink() {
         return link;
     }
 
-    public void setLink(String input){
+    public void setLink(String input) {
         link = input;
     }
 
