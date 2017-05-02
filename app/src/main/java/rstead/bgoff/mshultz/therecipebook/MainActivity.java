@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             String pageContent = downloadMaterial.execute("http://allrecipes.com").get();
             Log.i("Content Downloading", "Downloading...");
-            String pattern = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\".+?<h3\\sclass=\"grid\\-col__h3 grid\\-col__h3\\-\\-recipe\\-grid\">.+?\\s*([\\w\\d'\\s]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)";
+            String pattern = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\".+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
 
             Pattern regexPattern = Pattern.compile(pattern);
             Matcher matcher = regexPattern.matcher(pageContent);
