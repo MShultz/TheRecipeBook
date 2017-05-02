@@ -33,13 +33,12 @@ public class MainActivity extends AppCompatActivity {
     private final String TIPS_REGEX = "(?s)Footnotes.+?Tip.+?<li>(.+?)<\\/li>";
 
 
-   // private Pattern ingredientPattern, directionPattern, tipPattern;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.setRecipeDB(getDatabase());
+        this.setRecipeDB(((GlobalHelper)this.getApplication()).getRecipeDB());
+        recipeDB.clearDatabase();
         initRecipes();
     }
 
@@ -104,10 +103,6 @@ public class MainActivity extends AppCompatActivity {
         //Toast.makeText(this, "Hello there, it worked!", Toast.LENGTH_SHORT).show();
     }
 
-    private DatabaseHandler getDatabase() {
-        return new DatabaseHandler(this.openOrCreateDatabase(DatabaseHandler.DB_NAME, MODE_PRIVATE, null));
-    }
-
     public void setRecipeDB(DatabaseHandler recipeDB) {
         this.recipeDB = recipeDB;
     }
@@ -117,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             StringBuilder pageContent = new StringBuilder().append(new DownloadMaterial().execute("http://allrecipes.com").get());
             Log.i("Content Downloading", "Downloading...");
-            
+
             Pattern regexPattern = Pattern.compile(COMPLETE_PATTERN);
             Matcher matcher = regexPattern.matcher(pageContent.toString());
 
