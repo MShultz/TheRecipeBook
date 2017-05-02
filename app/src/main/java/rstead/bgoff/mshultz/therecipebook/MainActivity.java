@@ -1,35 +1,49 @@
 package rstead.bgoff.mshultz.therecipebook;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.widget.Toast;
+
 @TargetApi(25)
 public class MainActivity extends AppCompatActivity {
     DatabaseHandler recipeDB;
+    private static final String EXTRA_IMAGE = "rstead.bgoff.mshultz.therecipebook.IMAGE";
+    private static final String EXTRA_LINK = "rstead.bgoff.mshultz.therecipebook.LINK";
+    private static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.setRecipeDB(getDatabase());
+        initRecipes();
+    }
 
+    private void initRecipes() {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         float den = metrics.density;
         int recipeSize = (int) (150 * den);
         int marg = (int) (15 * den);
         int tabCount = 1;
-		createRecipesFromHomePage();
+        ArrayList<Recipe> recipes = createRecipesFromHomePage();
 
         LinearLayout mainParent = (LinearLayout) findViewById(R.id.mainLayout);
 
@@ -54,10 +68,33 @@ public class MainActivity extends AppCompatActivity {
 
             recipe = new RecipeView(this);
             recipe.setLayoutParams(recipeLP);
-            recipe.setcontent("BEEF");
-            recipe.setsrcImage(getDrawable(R.drawable.beef));
+
+            //add the recipe's contents
+            recipe.setContent(recipes.get(i).getName());
+            try{
+            recipe.setsrcImage(new BitmapDrawable(new WebImage().execute(recipes.get(i).getImageLink()).get()));
+            }catch(Exception e){
+
+            }
+
+            recipe.setIsWeb(false);
+            recipe.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sendToRecipeView(v);
+                }
+            });
+
             currTab.addView(recipe);
         }
+    }
+
+    private void sendToRecipeView(View view) {
+        RecipeView recipe = (RecipeView) view;
+        Intent intent = new Intent(this, RecipeViewActivity.class);
+        intent.putExtra(EXTRA_ID, recipe.getRecipeKey());
+        startActivity(intent);
+        //Toast.makeText(this, "Hello there, it worked!", Toast.LENGTH_SHORT).show();
     }
 
     private DatabaseHandler getDatabase() {
@@ -68,10 +105,10 @@ public class MainActivity extends AppCompatActivity {
         this.recipeDB = recipeDB;
     }
 
-    public ArrayList<Recipe> createRecipesFromHomePage(){
+    public ArrayList<Recipe> createRecipesFromHomePage() {
         ArrayList<Recipe> recipes = new ArrayList<>();
         DownloadMaterial downloadMaterial = new DownloadMaterial();
-        try{
+        try {
             String pageContent = downloadMaterial.execute("http://allrecipes.com").get();
             Log.i("Content Downloading", "Downloading...");
             String pattern = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\".+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
@@ -79,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             Pattern regexPattern = Pattern.compile(pattern);
             Matcher matcher = regexPattern.matcher(pageContent);
 
-            while(matcher.find()){
+            while (matcher.find()) {
                 String queryString = matcher.group(3);
 
                 DownloadMaterial singlePageMaterial = new DownloadMaterial();
@@ -100,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
             Log.i("ContentDownloading", "Done!");
-        }catch(InterruptedException | ExecutionException e){
+        } catch (InterruptedException | ExecutionException e) {
             Log.e("Parse Error!", e.toString());
         }
 
@@ -108,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         return recipes;
     }
 
-    private String getIngredientsStringFromPage(String pageContent){
+    private String getIngredientsStringFromPage(String pageContent) {
         String ingredientsString = "";
 
         String ingredientRegex = "itemprop=\"ingredients\">(.+?)<\\/span>";
@@ -116,21 +153,21 @@ public class MainActivity extends AppCompatActivity {
         Matcher ingredientMatcher = ingredientsPattern.matcher(pageContent);
 
         ArrayList<String> ingredients = new ArrayList<>();
-        while(ingredientMatcher.find()){
+        while (ingredientMatcher.find()) {
             ingredients.add(ingredientMatcher.group(1));
             Log.i("Ingredient", ingredientMatcher.group(1));
         }
 
-        for(int i = 0; i < ingredients.size(); i++){
+        for (int i = 0; i < ingredients.size(); i++) {
             ingredientsString += ingredients.get(i);
-            if(i != ingredients.size() - 1){
+            if (i != ingredients.size() - 1) {
                 ingredientsString += ",";
             }
         }
         return ingredientsString;
     }
 
-    private String getDirectionsStringFromPage(String pageContent){
+    private String getDirectionsStringFromPage(String pageContent) {
         String directionsString = "";
 
         String directionsRegex = "recipe-directions__list--item\">(.+?)<\\/span>";
@@ -138,21 +175,21 @@ public class MainActivity extends AppCompatActivity {
         Matcher directionsMatcher = directionsPattern.matcher(pageContent);
 
         ArrayList<String> directions = new ArrayList<>();
-        while(directionsMatcher.find()){
+        while (directionsMatcher.find()) {
             directions.add(directionsMatcher.group(1));
             Log.i("Direction", directionsMatcher.group(1));
         }
 
-        for(int i = 0; i < directions.size(); i++){
+        for (int i = 0; i < directions.size(); i++) {
             directionsString += directions.get(i);
-            if(i != directions.size() - 1){
+            if (i != directions.size() - 1) {
                 directionsString += "\n";
             }
         }
         return directionsString;
     }
 
-    private String getTipsStringFromPage(String pageContent){
+    private String getTipsStringFromPage(String pageContent) {
         String tipsString = "";
 
         String tipsRegex = "(?s)Footnotes.+?Tip.+?<li>(.+?)<\\/li>";
@@ -160,14 +197,14 @@ public class MainActivity extends AppCompatActivity {
         Matcher tipsMatcher = tipsPattern.matcher(pageContent);
 
         ArrayList<String> tips = new ArrayList<>();
-        while(tipsMatcher.find()){
+        while (tipsMatcher.find()) {
             tips.add(tipsMatcher.group(1));
             Log.i("Tip", tipsMatcher.group(1));
         }
 
-        for(int i = 0; i < tips.size(); i++){
+        for (int i = 0; i < tips.size(); i++) {
             tipsString += tips.get(i);
-            if(i != tips.size() - 1){
+            if (i != tips.size() - 1) {
                 tipsString += "\n";
             }
         }
