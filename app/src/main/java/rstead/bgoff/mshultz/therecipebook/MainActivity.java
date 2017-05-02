@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             StringBuilder pageContent = new StringBuilder().append(new DownloadMaterial().execute("http://allrecipes.com").get());
             Log.i("Content Downloading", "Downloading...");
+            
             Pattern regexPattern = Pattern.compile(COMPLETE_PATTERN);
             Matcher matcher = regexPattern.matcher(pageContent.toString());
 
