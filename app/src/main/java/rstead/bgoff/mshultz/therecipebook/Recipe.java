@@ -6,25 +6,26 @@ package rstead.bgoff.mshultz.therecipebook;
 
 public class Recipe {
     private int id;
-    private String name, imageLink, ingredients, description, notes;
+    private String name, imageLink, ingredients, description, notes, dateCreated;
 
-    public Recipe(int id, String name, String imageLink, String ingredients, String description, String notes) {
+    public Recipe(int id, String name, String imageLink, String ingredients, String description, String notes, String dateCreated) {
         this.setId(id);
         this.setName(name);
         this.setImageLink(imageLink);
         this.setIngredients(ingredients);
         this.setDescription(description);
         this.setNotes(notes);
+        this.setDateCreated(dateCreated);
 
     }
 
-    public Recipe(String name, String imageLink, String ingredients, String description, String notes) {
+    public Recipe(String name, String imageLink, String ingredients, String description, String notes, String dateCreated) {
         this.setName(name);
         this.setImageLink(imageLink);
         this.setIngredients(ingredients);
         this.setDescription(description);
         this.setNotes(notes);
-
+        this.setDateCreated(dateCreated);
     }
 
     public int getId() {
@@ -73,5 +74,13 @@ public class Recipe {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
     }
 }

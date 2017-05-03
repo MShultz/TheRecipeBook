@@ -13,7 +13,8 @@ import java.util.ArrayList;
 public class DatabaseHandler {
     public final static String DB_NAME = "RecipeBook";
     public final String PK_ID = "ID";
-    public final String TABLE_NAME = "recipes";
+    public final String USER_TABLE = "recipes";
+    public final String WEB_TABLE = "webrecipes";
     private final String NAME_COL = "name";
     private final String INGREDIENTS_COL = "ingredients";
     private final String DESCRIPTION_COL = "description";
@@ -26,11 +27,11 @@ public class DatabaseHandler {
 
     public DatabaseHandler(SQLiteDatabase recipeBookDatabase) {
         this.setRecipeBookDatabase(recipeBookDatabase);
-        initializeRecipesTable();
+        initializeRecipeTables();
     }
 
-    private void initializeRecipesTable() {
-        recipeBookDatabase.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "("
+    private void initializeRecipeTables() {
+        recipeBookDatabase.execSQL("CREATE TABLE IF NOT EXISTS " + USER_TABLE + "("
                 + PK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + NAME_COL + " varchar, "
                 + IMAGE_COL + " varchar, "
@@ -47,7 +48,7 @@ public class DatabaseHandler {
 
     public ArrayList<Recipe> getAllRecipes() {
         ArrayList<Recipe> list = new ArrayList<>();
-        cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + USER_TABLE, null);
 
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
@@ -74,7 +75,7 @@ public class DatabaseHandler {
     }
 
     public void addRecipe(Recipe recipe) {
-        recipeBookDatabase.insert(TABLE_NAME, null, getRecipeContentValues(recipe));
+        recipeBookDatabase.insert(USER_TABLE, null, getRecipeContentValues(recipe));
 
     }
 
@@ -89,20 +90,20 @@ public class DatabaseHandler {
     }
 
     public void deleteRecipe(int pk) {
-        recipeBookDatabase.delete(TABLE_NAME, PK_ID + " = " + pk, null);
+        recipeBookDatabase.delete(USER_TABLE, PK_ID + " = " + pk, null);
     }
 
     public boolean updateItem(int id, Recipe editedRecipe) {
-        int success = recipeBookDatabase.update(TABLE_NAME, getRecipeContentValues(editedRecipe), PK_ID + " = " + id, null);
+        int success = recipeBookDatabase.update(USER_TABLE, getRecipeContentValues(editedRecipe), PK_ID + " = " + id, null);
         return (success > 0);
     }
 
     public void clearDatabase() {
-        recipeBookDatabase.delete(TABLE_NAME, null, null);
+        recipeBookDatabase.delete(USER_TABLE, null, null);
     }
 
     public Recipe getRecipe(int pk) {
-        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + PK_ID + " = " + pk, null);
+        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + USER_TABLE + " WHERE " + PK_ID + " = " + pk, null);
         cursor.moveToFirst();
         return createRecipe(cursor);
     }
