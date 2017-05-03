@@ -10,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-public class RecipeViewActivity extends AppCompatActivity {
+public class RecipeDetailActivity extends AppCompatActivity {
 
     DatabaseHandler dbHandler;
 
