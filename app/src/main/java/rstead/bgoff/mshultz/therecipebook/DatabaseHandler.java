@@ -157,7 +157,8 @@ public class DatabaseHandler {
                 dateCreated = cursor.getColumnIndex(DATE_COL);
                 Date lastDate = new SimpleDateFormat("MM/dd/yy HH:mm:ss").parse(cursor.getString(dateCreated));
                 long hoursPassed = (d.getTime() - lastDate.getTime()) / MILLISECONDS_IN_HOUR;
-                if(hoursPassed > DATABASE_HOURS_THRESHOLD){
+                Log.e("HOURS", hoursPassed + "");
+                if(hoursPassed < DATABASE_HOURS_THRESHOLD){
                     shouldLoad = true;
                 }
             }catch(ParseException e){

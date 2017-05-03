@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
@@ -140,7 +141,7 @@ public class InspirationActivity extends AppCompatActivity {
                         matcher.group(1),
                         getIngredientsStringFromPage(singlePageContent),
                         getDirectionsStringFromPage(singlePageContent),
-                        getTipsStringFromPage(singlePageContent), new Date().toString()));
+                        getTipsStringFromPage(singlePageContent), new SimpleDateFormat("MM/dd/yy HH:mm:ss").format(new Date())));
             }
             Log.i("ContentDownloading", "Done!");
         } catch (InterruptedException | ExecutionException e) {
