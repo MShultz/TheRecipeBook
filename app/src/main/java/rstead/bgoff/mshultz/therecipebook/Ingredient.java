@@ -39,7 +39,7 @@ public class Ingredient {
     }
 
     public void setAmountType(String amountType) {
-        this.amountType = amountType;
+        this.amountType = (amountType.equals("N/A"))? "" : amountType;
     }
 
     public Fraction getAmount() {
