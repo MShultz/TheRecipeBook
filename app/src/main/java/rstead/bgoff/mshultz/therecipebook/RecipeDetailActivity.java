@@ -1,10 +1,12 @@
 package rstead.bgoff.mshultz.therecipebook;
 
+import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -66,7 +68,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
         Recipe retrievedRecipe = dbHandler.getRecipe(getIntent().getIntExtra(MainActivity.EXTRA_ID, 1), getIntent().getBooleanExtra("isWeb", false));
 
         if(getIntent().getBooleanExtra("isWeb", false)){
-            findViewById(R.id.edit_button).setVisibility(View.GONE);
             findViewById(R.id.del_button).setVisibility(View.GONE);
 
             try {
@@ -74,6 +75,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
             }catch(Exception e){};
             findViewById(R.id.recipe_Image).setVisibility(View.VISIBLE);
             ((TextView)findViewById(R.id.recipe_name)).setGravity(Gravity.CENTER);
+            findViewById(R.id.add_to_local).setVisibility(View.VISIBLE);
         }
         showDetails(retrievedRecipe);
 
@@ -92,9 +94,12 @@ public class RecipeDetailActivity extends AppCompatActivity {
         LinearLayout parent = (LinearLayout)findViewById(R.id.ingredients_layout);
 
         for(int i = 0; i < ingredientList.length; i++){
+            Log.e("Ingredient String", ingredientList[i]);
             String[] ingredientDetails = ingredientList[i].split(":");
             String amount = ingredientDetails[0];
+
             String remaining = " " + ingredientDetails[1] + " " + ingredientDetails[2];
+
             TextView amountView = new TextView(this);
             amountView.setId(amountViewCount++);
             amountView.setText(amount);
@@ -116,6 +121,12 @@ public class RecipeDetailActivity extends AppCompatActivity {
     public void onDeleteRecipe(View view){
         dbHandler.deleteRecipe(getIntent().getIntExtra(MainActivity.EXTRA_ID, 0));
         finish();
+    }
+
+
+    public void onAddToDB(View view){
+        Recipe recipe = dbHandler.getRecipe(((Activity)view.getContext()).getIntent().getIntExtra(MainActivity.EXTRA_ID, 1), true);
+        dbHandler.addRecipe(recipe, false);
     }
 
 }
