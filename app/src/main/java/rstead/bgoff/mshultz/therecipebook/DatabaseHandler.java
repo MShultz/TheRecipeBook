@@ -59,9 +59,9 @@ public class DatabaseHandler {
     }
 
     private Recipe createRecipe(Cursor cursor) {
-        if (cursor.getCount() > 0) {
             id = cursor.getColumnIndex(PK_ID);
             name = cursor.getColumnIndex(NAME_COL);
+            imageLink = cursor.getColumnIndex(IMAGE_COL);
             ingredients = cursor.getColumnIndex(INGREDIENTS_COL);
             description = cursor.getColumnIndex(DESCRIPTION_COL);
             notes = cursor.getColumnIndex(NOTES_COL);
@@ -71,8 +71,6 @@ public class DatabaseHandler {
                     cursor.getString(ingredients),
                     cursor.getString(description),
                     cursor.getString(notes));
-        }
-        return null;
     }
 
     public void addRecipe(Recipe recipe) {

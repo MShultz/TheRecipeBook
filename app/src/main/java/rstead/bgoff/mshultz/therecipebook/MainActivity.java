@@ -41,7 +41,6 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
-        recipeDB.clearDatabase();
         ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
