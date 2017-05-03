@@ -32,7 +32,7 @@ public class InspirationActivity extends AppCompatActivity {
     private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
     private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
     private final String TIPS_REGEX = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
-    private final String INGREDIENT_SPLIT_REGEX = "([\\d]* [\\d\\/]*|[\\d]*) (.+?[\\w\\d(),]*) (.+[\\w ,]*)";
+    private final String INGREDIENT_SPLIT_REGEX = "([\\d]* [\\d\\/]*|[\\d]*) (.+?[\\w\\d(),]*) ?(.+[\\w ,]*)";
     private Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
     private Pattern tipPattern = Pattern.compile(TIPS_REGEX);
     private Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
