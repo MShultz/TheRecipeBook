@@ -106,7 +106,6 @@ public class RecipeView extends View {
 
         centerText();
 
-        Log.e("TextCenter", contentText);
         // Draw the text.
         float x = ((paddingLeft + (contentWidth - mTextWidth)) / 2) + 20;
         float y = ((paddingTop + (contentHeight + mTextHeight)) / 2) - 50;
