@@ -120,14 +120,16 @@
                 android:id="@+id/edit_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Edit Recipe" />
+                android:text="Edit Recipe"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/del_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onDeleteRecipe"
-                android:text="Delete Recipe" />
+                android:text="Delete Recipe"
+                android:textColor="@color/colorPrimary" />
 
         </LinearLayout>
     </ScrollView>
