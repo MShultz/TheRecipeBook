@@ -67,7 +67,6 @@ public class RecipeView extends View {
         // Set up a default TextPaint object
         mTextPaint = new TextPaint();
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        //mTextPaint.setTextAlign(Paint.Align.LEFT);
 
         // Update TextPaint and text measurements from attributes
         invalidateTextPaintAndMeasurements();
@@ -86,14 +85,12 @@ public class RecipeView extends View {
 
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
-        int paddingRight = getPaddingRight();
-        int paddingBottom = getPaddingBottom();
 
-        int contentWidth = getWidth() - paddingLeft - paddingRight;
-        int contentHeight = getHeight() - paddingTop - paddingBottom;
+        int contentWidth = getWidth();
+        int contentHeight = getHeight();
+
         srcImage = srcImage == null ? getResources().getDrawable(R.drawable.ic_action_restaurant_light) : srcImage;
-        srcImage.setBounds(paddingLeft, paddingTop,
-               paddingLeft + contentWidth, paddingTop + contentHeight);
+        srcImage.setBounds(paddingLeft, paddingTop, contentWidth, contentHeight);
         srcImage.draw(canvas);
 
         Paint rectColor = new Paint();

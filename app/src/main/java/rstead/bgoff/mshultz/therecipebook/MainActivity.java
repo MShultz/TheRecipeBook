@@ -1,9 +1,12 @@
 package rstead.bgoff.mshultz.therecipebook;
 
 import android.annotation.TargetApi;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,11 +25,11 @@ import java.util.regex.Pattern;
 import android.widget.Toast;
 
 @TargetApi(25)
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity implements AddRecipeDialogue.AddRecipeListener {
     DatabaseHandler recipeDB;
     private static final String EXTRA_IMAGE = "rstead.bgoff.mshultz.therecipebook.IMAGE";
     private static final String EXTRA_LINK = "rstead.bgoff.mshultz.therecipebook.LINK";
-    private static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
+    public static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
     private final String COMPLETE_PATTERN = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\" (?!alt=\"Cook\").+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
     private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
     private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
@@ -37,8 +40,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.setRecipeDB(((GlobalHelper)this.getApplication()).getRecipeDB());
+        this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
         recipeDB.clearDatabase();
+        ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
 
@@ -49,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         int recipeSize = (int) (150 * den);
         int marg = (int) (15 * den);
         int tabCount = 1;
-        ArrayList<Recipe> recipes = createRecipesFromHomePage();
 
         LinearLayout mainParent = (LinearLayout) findViewById(R.id.mainLayout);
 
@@ -64,7 +67,9 @@ public class MainActivity extends AppCompatActivity {
         RelativeLayout.LayoutParams recipeLP = new RelativeLayout.LayoutParams(recipeSize, recipeSize);
         recipeLP.setMargins(marg, marg, marg, marg);
 
-        for (int i = 0; i < 10; i++) {
+        ArrayList<Recipe> recipes = recipeDB.getAllRecipes();
+
+        for (int i = 0; i < recipes.size(); i++) {
             //every two recipes, add a new LinearLayout
             if (i % 2 == 0) {
                 currTab = new LinearLayout(this);
@@ -75,14 +80,9 @@ public class MainActivity extends AppCompatActivity {
             recipe = new RecipeView(this);
             recipe.setLayoutParams(recipeLP);
 
-            //add the recipe's contents
             recipe.setContent(recipes.get(i).getName());
-            try {
-                recipe.setsrcImage(new BitmapDrawable(new WebImage().execute(recipes.get(i).getImageLink()).get()));
-            } catch (Exception e) {
 
-            }
-
+            recipe.setId(recipes.get(i).getId());
             recipe.setIsWeb(false);
             recipe.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -95,12 +95,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDoneClick(DialogFragment diagFrag) {
+        AddRecipeDialogue dialogue = (AddRecipeDialogue) diagFrag;
+        Recipe newRecipe = dialogue.createRecipe();
+        recipeDB.addRecipe(newRecipe);
+        ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
+        initRecipes();
+    }
+
     private void sendToRecipeView(View view) {
         RecipeView recipe = (RecipeView) view;
         Intent intent = new Intent(this, RecipeViewActivity.class);
         intent.putExtra(EXTRA_ID, recipe.getRecipeKey());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
-        //Toast.makeText(this, "Hello there, it worked!", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onAddClick(View view) {
+        DialogFragment dialogue = new AddRecipeDialogue();
+        dialogue.show(getFragmentManager(), "Add");
     }
 
     public void setRecipeDB(DatabaseHandler recipeDB) {
