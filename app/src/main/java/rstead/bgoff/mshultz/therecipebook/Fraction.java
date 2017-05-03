@@ -30,7 +30,8 @@ public class Fraction {
     }
 
     public void setDenominator(int denominator) {
-        this.denominator = denominator;
+        this.denominator = denominator == 0 ? 1 : denominator;
+
     }
 
     public Fraction(int whole, int numerator, int denominator) {
@@ -92,7 +93,7 @@ public class Fraction {
         //Implement Euclid's recursive algo for finding the greatest common divisor
         m = Math.abs(m);
         n = Math.abs(n);
-        int gcd = 0;
+        int gcd = m;
         if (m == 0) {
             gcd = n;
         } else if (n == 0) {
