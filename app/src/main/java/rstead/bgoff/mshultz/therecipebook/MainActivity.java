@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,7 +60,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         RelativeLayout.LayoutParams recipeLP = new RelativeLayout.LayoutParams(recipeSize, recipeSize);
         recipeLP.setMargins(marg, marg, marg, marg);
 
-        ArrayList<Recipe> recipes = recipeDB.getAllRecipes();
+        ArrayList<Recipe> recipes = recipeDB.getUserRecipes();
 
         for (int i = 0; i < recipes.size(); i++) {
             //every two recipes, add a new LinearLayout
@@ -133,7 +134,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
                         matcher.group(1),
                         getIngredientsStringFromPage(singlePageContent),
                         getDirectionsStringFromPage(singlePageContent),
-                        getTipsStringFromPage(singlePageContent)));
+                        getTipsStringFromPage(singlePageContent), new Date().toString()));
             }
             Log.i("ContentDownloading", "Done!");
         } catch (InterruptedException | ExecutionException e) {

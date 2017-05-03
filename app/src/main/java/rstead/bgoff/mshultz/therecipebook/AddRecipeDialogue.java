@@ -40,7 +40,13 @@ public class AddRecipeDialogue extends DialogFragment {
 
     private String name, imageLink, ingredients, directions, notes, ingredientName, ingredientAmount, amountType;
 
-    @Override
+        imageLink = null;
+        return new Recipe(name, imageLink, ingredients, directions, notes, null);
+    public Recipe createRecipe(){
+        setProps();
+        //BOI THIS IS NEEDS TO NOT BE NULL OR IT MIGHT DIE LATER.
+        return new Recipe(name, imageLink, ingredients, directions, notes, null);
+    }    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
