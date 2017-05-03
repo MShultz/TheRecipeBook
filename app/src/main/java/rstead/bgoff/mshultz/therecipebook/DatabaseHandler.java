@@ -103,8 +103,8 @@ public class DatabaseHandler {
                     cursor.getString(dateCreated));
     }
 
-    public void addRecipe(Recipe recipe) {
-        recipeBookDatabase.insert(recipe.getImageLink() == null ? USER_TABLE : WEB_TABLE, null, getRecipeContentValues(recipe));
+    public void addRecipe(Recipe recipe, boolean isWeb) {
+        recipeBookDatabase.insert(isWeb ? WEB_TABLE : USER_TABLE, null, getRecipeContentValues(recipe));
 
     }
 
@@ -112,7 +112,7 @@ public class DatabaseHandler {
         recipeBookDatabase.delete(WEB_TABLE, null, null);
         for(Recipe recipe : recipes){
             Log.e("WEBRECIPELOG:", recipe.getImageLink());
-            addRecipe(recipe);
+            addRecipe(recipe, true);
         }
         return getWebRecipes();
     }
