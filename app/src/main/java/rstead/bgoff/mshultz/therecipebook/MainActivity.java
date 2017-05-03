@@ -29,7 +29,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
     DatabaseHandler recipeDB;
     private static final String EXTRA_IMAGE = "rstead.bgoff.mshultz.therecipebook.IMAGE";
     private static final String EXTRA_LINK = "rstead.bgoff.mshultz.therecipebook.LINK";
-    private static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
+    public static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
     private final String COMPLETE_PATTERN = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\" (?!alt=\"Cook\").+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
     private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
     private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
@@ -40,9 +40,9 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.setRecipeDB(((GlobalHelper)this.getApplication()).getRecipeDB());
+        this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
         recipeDB.clearDatabase();
-        ((LinearLayout)findViewById(R.id.mainLayout)).removeAllViews();
+        ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
 
@@ -100,7 +100,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         AddRecipeDialogue dialogue = (AddRecipeDialogue) diagFrag;
         Recipe newRecipe = dialogue.createRecipe();
         recipeDB.addRecipe(newRecipe);
-        ((LinearLayout)findViewById(R.id.mainLayout)).removeAllViews();
+        ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
 
@@ -108,14 +108,15 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         RecipeView recipe = (RecipeView) view;
         Intent intent = new Intent(this, RecipeViewActivity.class);
         intent.putExtra(EXTRA_ID, recipe.getRecipeKey());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 
-    public void onAddClick(View view){
+    public void onAddClick(View view) {
         DialogFragment dialogue = new AddRecipeDialogue();
         dialogue.show(getFragmentManager(), "Add");
     }
+
     public void setRecipeDB(DatabaseHandler recipeDB) {
         this.recipeDB = recipeDB;
     }
