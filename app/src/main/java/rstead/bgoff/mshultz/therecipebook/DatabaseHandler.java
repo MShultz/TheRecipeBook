@@ -41,6 +41,15 @@ public class DatabaseHandler {
                 + NOTES_COL + " varchar, "
                 + DATE_COL + " datetime)");
 
+        recipeBookDatabase.execSQL("CREATE TABLE IF NOT EXISTS " + WEB_TABLE + "("
+                + PK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + NAME_COL + " varchar, "
+                + IMAGE_COL + " varchar, "
+                + INGREDIENTS_COL + " varchar, "
+                + DESCRIPTION_COL + " varchar, "
+                + NOTES_COL + " varchar, "
+                + DATE_COL + " datetime)");
+
     }
 
 
@@ -48,10 +57,20 @@ public class DatabaseHandler {
         this.recipeBookDatabase = recipeBookDatabase;
     }
 
-    public ArrayList<Recipe> getAllRecipes() {
-        ArrayList<Recipe> list = new ArrayList<>();
+    public ArrayList<Recipe> getUserRecipes() {
         cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + USER_TABLE, null);
+        ArrayList<Recipe> list = populateRecipeList(cursor);
+        return list;
+    }
 
+    public ArrayList<Recipe> getWebRecipes() {
+        cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + WEB_TABLE, null);
+        ArrayList<Recipe> list = populateRecipeList(cursor);
+        return list;
+    }
+
+    public ArrayList<Recipe> populateRecipeList(Cursor cursor){
+        ArrayList<Recipe> list = new ArrayList<>();
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
@@ -79,7 +98,7 @@ public class DatabaseHandler {
     }
 
     public void addRecipe(Recipe recipe) {
-        recipeBookDatabase.insert(USER_TABLE, null, getRecipeContentValues(recipe));
+        recipeBookDatabase.insert(recipe.getImageLink() == null ? USER_TABLE : WEB_TABLE, null, getRecipeContentValues(recipe));
 
     }
 

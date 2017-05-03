@@ -60,7 +60,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         RelativeLayout.LayoutParams recipeLP = new RelativeLayout.LayoutParams(recipeSize, recipeSize);
         recipeLP.setMargins(marg, marg, marg, marg);
 
-        ArrayList<Recipe> recipes = recipeDB.getAllRecipes();
+        ArrayList<Recipe> recipes = recipeDB.getUserRecipes();
 
         for (int i = 0; i < recipes.size(); i++) {
             //every two recipes, add a new LinearLayout
