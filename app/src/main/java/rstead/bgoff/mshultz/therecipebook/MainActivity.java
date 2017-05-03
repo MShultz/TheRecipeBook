@@ -124,6 +124,17 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         this.recipeDB = recipeDB;
     }
 
+    public ArrayList<Recipe> loadInspirations(){
+        ArrayList<Recipe> recipes;
+        boolean shouldLoad = recipeDB.shouldLoadFromDatabase();
+        if(shouldLoad){
+            recipes = recipeDB.getWebRecipes();
+        }else{
+            recipes = createRecipesFromHomePage();
+        }
+        return recipes;
+    }
+
     public ArrayList<Recipe> createRecipesFromHomePage() {
         ArrayList<Recipe> recipes = new ArrayList<>();
         try {
@@ -149,7 +160,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         } catch (InterruptedException | ExecutionException e) {
             Log.e("Parse Error!", e.toString());
         }
-
+        recipeDB.resetWebRecipes(recipes);
 
         return recipes;
     }
@@ -184,7 +195,6 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         Pattern tipPattern = Pattern.compile(TIPS_REGEX);
         Matcher tipsMatcher = tipPattern.matcher(pageContent);
 
-        ArrayList<String> tips = new ArrayList<>();
         StringBuilder tipString = new StringBuilder();
         while (tipsMatcher.find()) {
             tipString.append(tipsMatcher.group(1));

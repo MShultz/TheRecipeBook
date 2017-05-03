@@ -3,8 +3,12 @@ package rstead.bgoff.mshultz.therecipebook;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Mary on 5/1/2017.
@@ -21,6 +25,8 @@ public class DatabaseHandler {
     private final String NOTES_COL = "notes";
     private final String IMAGE_COL = "imageLink";
     private final String DATE_COL = "dateadded";
+    private final long DATABASE_HOURS_THRESHOLD = 24;
+    private final long MILLISECONDS_IN_HOUR = 3600000;
     private SQLiteDatabase recipeBookDatabase;
     private Cursor cursor;
     private int name, ingredients, description, notes, imageLink, id, dateCreated;
@@ -102,6 +108,13 @@ public class DatabaseHandler {
 
     }
 
+    public void resetWebRecipes(ArrayList<Recipe> recipes){
+        recipeBookDatabase.delete(WEB_TABLE, null, null);
+        for(Recipe recipe : recipes){
+            addRecipe(recipe);
+        }
+    }
+
     private ContentValues getRecipeContentValues(Recipe recipe) {
         ContentValues recipeValues = new ContentValues();
         recipeValues.put(NAME_COL, recipe.getName());
@@ -130,5 +143,25 @@ public class DatabaseHandler {
         Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + USER_TABLE + " WHERE " + PK_ID + " = " + pk, null);
         cursor.moveToFirst();
         return createRecipe(cursor);
+    }
+
+    public boolean shouldLoadFromDatabase(){
+        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + WEB_TABLE, null);
+        boolean shouldLoad = false;
+        if (cursor.getCount() > 0) {
+            try{
+                cursor.moveToFirst();
+                Date d = new Date();
+                dateCreated = cursor.getColumnIndex(DATE_COL);
+                Date lastDate = new SimpleDateFormat("MM/dd/yy HH:mm:ss").parse(cursor.getString(dateCreated));
+                long hoursPassed = (d.getTime() - lastDate.getTime()) / MILLISECONDS_IN_HOUR;
+                if(hoursPassed > DATABASE_HOURS_THRESHOLD){
+                    shouldLoad = true;
+                }
+            }catch(ParseException e){
+                Log.e("ERROR STORING DATE", e.toString());
+            }
+        }
+        return shouldLoad;
     }
 }
