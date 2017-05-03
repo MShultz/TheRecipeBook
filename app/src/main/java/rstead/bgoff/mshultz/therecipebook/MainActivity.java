@@ -1,14 +1,9 @@
 package rstead.bgoff.mshultz.therecipebook;
 
 import android.annotation.TargetApi;
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.DisplayMetrics;
@@ -21,8 +16,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import android.widget.Toast;
 
 @TargetApi(25)
 public class MainActivity extends FragmentActivity implements AddRecipeDialogue.AddRecipeListener {
@@ -41,7 +34,6 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
-        recipeDB.clearDatabase();
         ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
@@ -82,7 +74,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
 
             recipe.setContent(recipes.get(i).getName());
 
-            recipe.setId(recipes.get(i).getId());
+            recipe.setRecipeKey(recipes.get(i).getId());
             recipe.setIsWeb(false);
             recipe.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -106,7 +98,8 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
 
     private void sendToRecipeView(View view) {
         RecipeView recipe = (RecipeView) view;
-        Intent intent = new Intent(this, RecipeViewActivity.class);
+        Log.e("RECIPE ID", recipe.getRecipeKey() + "");
+        Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putExtra(EXTRA_ID, recipe.getRecipeKey());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
