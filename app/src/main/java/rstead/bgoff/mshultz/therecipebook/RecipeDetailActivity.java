@@ -17,7 +17,10 @@ public class RecipeDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
-
+        if(getIntent().getBooleanExtra("isWeb", false)){
+            findViewById(R.id.edit_button).setVisibility(View.GONE);
+            findViewById(R.id.del_button).setVisibility(View.GONE);
+        }
         Recipe retrievedRecipe = dbHandler.getRecipe(getIntent().getIntExtra(MainActivity.EXTRA_ID, 1), getIntent().getBooleanExtra("isWeb", false));
 
         showDetails(retrievedRecipe);
