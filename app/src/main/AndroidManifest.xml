@@ -19,12 +19,7 @@
         <activity
             android:name=".RecipeViewActivity"
             android:label="@string/title_activity_recipe_view"
-            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <!-- The meta-data tag is required if you support API level 15 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
         </activity>
     </application>
 
