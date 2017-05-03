@@ -85,6 +85,12 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         }
     }
 
+    public void goToInspirations(View view){
+        Intent intent = new Intent(this, InspirationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
+
     @Override
     public void onDoneClick(DialogFragment diagFrag) {
         AddRecipeDialogue dialogue = (AddRecipeDialogue) diagFrag;
