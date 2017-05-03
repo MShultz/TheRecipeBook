@@ -94,7 +94,9 @@ public class RecipeDetailActivity extends AppCompatActivity {
         for(int i = 0; i < ingredientList.length; i++){
             String[] ingredientDetails = ingredientList[i].split(":");
             String amount = ingredientDetails[0];
+
             String remaining = " " + ingredientDetails[1] + " " + ingredientDetails[2];
+
             TextView amountView = new TextView(this);
             amountView.setId(amountViewCount++);
             amountView.setText(amount);
