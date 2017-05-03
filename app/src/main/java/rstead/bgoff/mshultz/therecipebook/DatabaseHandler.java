@@ -59,17 +59,20 @@ public class DatabaseHandler {
     }
 
     private Recipe createRecipe(Cursor cursor) {
-        id = cursor.getColumnIndex(PK_ID);
-        name = cursor.getColumnIndex(NAME_COL);
-        ingredients = cursor.getColumnIndex(INGREDIENTS_COL);
-        description = cursor.getColumnIndex(DESCRIPTION_COL);
-        notes = cursor.getColumnIndex(NOTES_COL);
-        return new Recipe(Integer.parseInt(cursor.getString(id)),
-                cursor.getString(name),
-                cursor.getString(imageLink),
-                cursor.getString(ingredients),
-                cursor.getString(description),
-                cursor.getString(notes));
+        if (cursor.getCount() > 0) {
+            id = cursor.getColumnIndex(PK_ID);
+            name = cursor.getColumnIndex(NAME_COL);
+            ingredients = cursor.getColumnIndex(INGREDIENTS_COL);
+            description = cursor.getColumnIndex(DESCRIPTION_COL);
+            notes = cursor.getColumnIndex(NOTES_COL);
+            return new Recipe(Integer.parseInt(cursor.getString(id)),
+                    cursor.getString(name),
+                    cursor.getString(imageLink),
+                    cursor.getString(ingredients),
+                    cursor.getString(description),
+                    cursor.getString(notes));
+        }
+        return null;
     }
 
     public void addRecipe(Recipe recipe) {
