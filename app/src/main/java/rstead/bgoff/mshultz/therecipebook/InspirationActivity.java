@@ -32,9 +32,11 @@ public class InspirationActivity extends AppCompatActivity {
     private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
     private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
     private final String TIPS_REGEX = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
-   // private Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
-   // private Pattern tipPattern = Pattern.compile(TIPS_REGEX);
-   // Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
+    private final String INGREDIENT_SPLIT_REGEX = "([\\d]* [\\d\\/]*|[\\d]*) (.+?[\\w\\d(),]*) ?(.+[\\w ,]*)";
+    private Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
+    private Pattern tipPattern = Pattern.compile(TIPS_REGEX);
+    private Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
+    private Pattern ingredientSplitPattern = Pattern.compile(INGREDIENT_SPLIT_REGEX);
 
     DatabaseHandler dbHandler;
 
@@ -71,12 +73,14 @@ public class InspirationActivity extends AppCompatActivity {
 
         RecipeView recipe;
         RelativeLayout.LayoutParams recipeLP = new RelativeLayout.LayoutParams(recipeSize, recipeSize);
+
         recipeLP.setMargins(marg, marg, marg, marg);
 
         for (int i = 0; i < recipes.size(); i++) {
             //every two recipes, add a new LinearLayout
             if (i % 2 == 0) {
                 currTab = new LinearLayout(this);
+                currTab.setLayoutParams(currTabParams);
                 currTab.setId(tabCount++);
                 mainParent.addView(currTab);
             }
@@ -153,21 +157,31 @@ public class InspirationActivity extends AppCompatActivity {
 
 
     private String getIngredientsStringFromPage(String pageContent) {
-        Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
         Matcher ingredientMatcher = ingredientPattern.matcher(pageContent);
 
         StringBuilder ingredientString = new StringBuilder();
         while (ingredientMatcher.find()) {
-            ingredientString.append(ingredientMatcher.group(1));
+            ingredientString.append(createSeparatedString(ingredientMatcher.group(1)));
             ingredientString.append(",");
         }
         ingredientString.setLength(ingredientString.length() - 1);
         return ingredientString.toString();
     }
 
+    private String createSeparatedString(String originalString){
+        Matcher ingredientStringMatcher = ingredientSplitPattern.matcher(originalString);
+        StringBuilder stringBuilder = new StringBuilder();
+        while(ingredientStringMatcher.find()){
+            stringBuilder.append(ingredientStringMatcher.group(1));
+            stringBuilder.append(":");
+            stringBuilder.append(ingredientStringMatcher.group(2).replace(",", ""));
+            stringBuilder.append(":");
+            stringBuilder.append(ingredientStringMatcher.group(3).replace(",", ""));
+        }
+        return stringBuilder.toString();
+    }
 
     private String getDirectionsStringFromPage(String pageContent) {
-        Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
         Matcher directionsMatcher = directionPattern.matcher(pageContent);
 
         StringBuilder directionString = new StringBuilder();
@@ -180,7 +194,6 @@ public class InspirationActivity extends AppCompatActivity {
     }
 
     private String getTipsStringFromPage(String pageContent) {
-        Pattern tipPattern = Pattern.compile(TIPS_REGEX);
         Matcher tipsMatcher = tipPattern.matcher(pageContent);
         StringBuilder tipString = new StringBuilder();
         while (tipsMatcher.find()) {
