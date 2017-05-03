@@ -30,12 +30,18 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
     private static final String EXTRA_IMAGE = "rstead.bgoff.mshultz.therecipebook.IMAGE";
     private static final String EXTRA_LINK = "rstead.bgoff.mshultz.therecipebook.LINK";
     private static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
+    private final String COMPLETE_PATTERN = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\" (?!alt=\"Cook\").+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
+    private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
+    private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
+    private final String TIPS_REGEX = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.setRecipeDB(getDatabase());
+        this.setRecipeDB(((GlobalHelper)this.getApplication()).getRecipeDB());
+        recipeDB.clearDatabase();
         ((LinearLayout)findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
@@ -75,8 +81,8 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
             recipe.setLayoutParams(recipeLP);
 
             recipe.setContent(recipes.get(i).getName());
-            recipe.setId(recipes.get(i).getId());
 
+            recipe.setId(recipes.get(i).getId());
             recipe.setIsWeb(false);
             recipe.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -110,45 +116,30 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         DialogFragment dialogue = new AddRecipeDialogue();
         dialogue.show(getFragmentManager(), "Add");
     }
-
-    private DatabaseHandler getDatabase() {
-        return new DatabaseHandler(this.openOrCreateDatabase(DatabaseHandler.DB_NAME, MODE_PRIVATE, null));
-    }
-
     public void setRecipeDB(DatabaseHandler recipeDB) {
         this.recipeDB = recipeDB;
     }
 
     public ArrayList<Recipe> createRecipesFromHomePage() {
         ArrayList<Recipe> recipes = new ArrayList<>();
-        DownloadMaterial downloadMaterial = new DownloadMaterial();
         try {
-            String pageContent = downloadMaterial.execute("http://allrecipes.com").get();
+            StringBuilder pageContent = new StringBuilder().append(new DownloadMaterial().execute("http://allrecipes.com").get());
             Log.i("Content Downloading", "Downloading...");
-            String pattern = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\" (?!alt=\"Cook\").+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
 
-            Pattern regexPattern = Pattern.compile(pattern);
-            Matcher matcher = regexPattern.matcher(pageContent);
+            Pattern regexPattern = Pattern.compile(COMPLETE_PATTERN);
+            Matcher matcher = regexPattern.matcher(pageContent.toString());
 
+            DownloadMaterial singlePageMaterial;
             while (matcher.find()) {
                 String queryString = matcher.group(3);
-
-                DownloadMaterial singlePageMaterial = new DownloadMaterial();
+                singlePageMaterial = new DownloadMaterial();
                 String singlePageContent = singlePageMaterial.execute("http://allrecipes.com" + queryString).get();
 
-                String name = matcher.group(2);
-                String imageURL = matcher.group(1);
-                String ingredientsString = getIngredientsStringFromPage(singlePageContent);
-                String directionsString = getDirectionsStringFromPage(singlePageContent);
-                String tipsString = getTipsStringFromPage(singlePageContent);
-
-                Recipe recipe = new Recipe(name, imageURL, ingredientsString, directionsString, tipsString);
-                recipes.add(recipe);
-
-                Log.i("Image URL", imageURL);
-                Log.i("Name", name);
-                Log.i("Query string", queryString);
-
+                recipes.add(new Recipe(matcher.group(2),
+                        matcher.group(1),
+                        getIngredientsStringFromPage(singlePageContent),
+                        getDirectionsStringFromPage(singlePageContent),
+                        getTipsStringFromPage(singlePageContent)));
             }
             Log.i("ContentDownloading", "Done!");
         } catch (InterruptedException | ExecutionException e) {
@@ -160,69 +151,43 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
     }
 
     private String getIngredientsStringFromPage(String pageContent) {
-        String ingredientsString = "";
+        Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
+        Matcher ingredientMatcher = ingredientPattern.matcher(pageContent);
 
-        String ingredientRegex = "itemprop=\"ingredients\">(.+?)<\\/span>";
-        Pattern ingredientsPattern = Pattern.compile(ingredientRegex);
-        Matcher ingredientMatcher = ingredientsPattern.matcher(pageContent);
-
-        ArrayList<String> ingredients = new ArrayList<>();
+        StringBuilder ingredientString = new StringBuilder();
         while (ingredientMatcher.find()) {
-            ingredients.add(ingredientMatcher.group(1));
-            Log.i("Ingredient", ingredientMatcher.group(1));
+            ingredientString.append(ingredientMatcher.group(1));
+            ingredientString.append(",");
         }
-
-        for (int i = 0; i < ingredients.size(); i++) {
-            ingredientsString += ingredients.get(i);
-            if (i != ingredients.size() - 1) {
-                ingredientsString += ",";
-            }
-        }
-        return ingredientsString;
+        ingredientString.setLength(ingredientString.length() - 1);
+        return ingredientString.toString();
     }
 
     private String getDirectionsStringFromPage(String pageContent) {
-        String directionsString = "";
+        Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
+        Matcher directionsMatcher = directionPattern.matcher(pageContent);
 
-        String directionsRegex = "recipe-directions__list--item\">(.+?)<\\/span>";
-        Pattern directionsPattern = Pattern.compile(directionsRegex);
-        Matcher directionsMatcher = directionsPattern.matcher(pageContent);
-
-        ArrayList<String> directions = new ArrayList<>();
+        StringBuilder directionString = new StringBuilder();
         while (directionsMatcher.find()) {
-            directions.add(directionsMatcher.group(1));
-            Log.i("Direction", directionsMatcher.group(1));
+            directionString.append(directionsMatcher.group(1));
+            directionString.append("\n");
         }
-
-        for (int i = 0; i < directions.size(); i++) {
-            directionsString += directions.get(i);
-            if (i != directions.size() - 1) {
-                directionsString += "\n";
-            }
-        }
-        return directionsString;
+        directionString.setLength(directionString.length() - 1);
+        return directionString.toString();
     }
 
     private String getTipsStringFromPage(String pageContent) {
-        String tipsString = "";
-
-        String tipsRegex = "(?s)Footnotes.+?Tip.+?<li>(.+?)<\\/li>";
-        Pattern tipsPattern = Pattern.compile(tipsRegex);
-        Matcher tipsMatcher = tipsPattern.matcher(pageContent);
+        Pattern tipPattern = Pattern.compile(TIPS_REGEX);
+        Matcher tipsMatcher = tipPattern.matcher(pageContent);
 
         ArrayList<String> tips = new ArrayList<>();
+        StringBuilder tipString = new StringBuilder();
         while (tipsMatcher.find()) {
-            tips.add(tipsMatcher.group(1));
-            Log.i("Tip", tipsMatcher.group(1));
+            tipString.append(tipsMatcher.group(1));
+            tipString.append("\n");
         }
-
-        for (int i = 0; i < tips.size(); i++) {
-            tipsString += tips.get(i);
-            if (i != tips.size() - 1) {
-                tipsString += "\n";
-            }
-        }
-        return tipsString;
+        if (tipString.length() > 0)
+            tipString.setLength(tipString.length() - 1);
+        return tipString.toString();
     }
-
 }
