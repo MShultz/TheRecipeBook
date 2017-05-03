@@ -108,6 +108,13 @@ public class DatabaseHandler {
 
     }
 
+    public void resetWebRecipes(ArrayList<Recipe> recipes){
+        recipeBookDatabase.delete(WEB_TABLE, null, null);
+        for(Recipe recipe : recipes){
+            addRecipe(recipe);
+        }
+    }
+
     private ContentValues getRecipeContentValues(Recipe recipe) {
         ContentValues recipeValues = new ContentValues();
         recipeValues.put(NAME_COL, recipe.getName());

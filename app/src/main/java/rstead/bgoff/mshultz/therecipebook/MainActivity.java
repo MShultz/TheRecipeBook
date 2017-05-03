@@ -151,7 +151,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         } catch (InterruptedException | ExecutionException e) {
             Log.e("Parse Error!", e.toString());
         }
-
+        recipeDB.resetWebRecipes(recipes);
 
         return recipes;
     }
