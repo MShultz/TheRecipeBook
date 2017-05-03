@@ -8,10 +8,13 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -51,11 +54,6 @@ public class AddRecipeDialogue extends DialogFragment {
 
     public Recipe createRecipe(){
         setProps();
-        //BOI THIS IS NEEDS TO NOT BE NULL OR IT MIGHT DIE LATER.
-        for(Ingredient i : ingredientList){
-            ingredients += i.toString() + ",";
-        }
-        ingredients = ingredients.substring(0, ingredients.length()-1);
         return new Recipe(name, imageLink, ingredients, directions, notes, null);
     }    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -104,8 +102,11 @@ public class AddRecipeDialogue extends DialogFragment {
         directions = ((TextView)activity.findViewById(R.id.direction_entry)).getText().toString();
         notes = ((TextView)activity.findViewById(R.id.notes_entry)).getText().toString();
         imageLink = null;
-        //Create new ingredient class, call toString for ingredients
-        ingredients = "Not implemented";
+        ingredients = "";
+        for(Ingredient i : ingredientList){
+            ingredients += i.toString() + ",";
+        }
+        ingredients = ingredients.substring(0, ingredients.length()-1);
     }
 
     private void populateAdapter(){
@@ -139,14 +140,25 @@ public class AddRecipeDialogue extends DialogFragment {
 
     public void onAddIngredient(View view){
 
-        DisplayMetrics metrics = new DisplayMetrics();
-        ((Activity)getContext()).getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        float den = metrics.density;
+        EditText amountView = (EditText)activity.findViewById(R.id.ingredient_amount);
+        int amountHeight = amountView.getHeight();
+        int amountWidth = amountView.getWidth();
+
+        Spinner spinView = (Spinner)activity.findViewById(R.id.amount_type_dropdown);
+        int spinHeight = spinView.getHeight();
+        int spinWidth = spinView.getWidth();
+
+        EditText nameView = (EditText)activity.findViewById(R.id.ingredient_name);
+        int nameHeight = nameView.getHeight();
+        int nameWidth = nameView.getWidth();
 
         //get info from current Ingredient, create an ingredient, add to ingredients list.
         LinearLayout ingredientContainer = (LinearLayout)activity.findViewById(R.id.ingredient_list_layout);
 
         LinearLayout parent = (LinearLayout)view.getParent();
+
+        //Delete previous add button
+        //((LinearLayout)ingredientContainer.getChildAt(ingredientContainer.getChildCount()-1)).getChildAt(3).setVisibility(View.GONE);
 
         for(int i = 0; i < parent.getChildCount() - 1; i += 2){
             //ignore index 1, is a spinner and has its own changeListener
@@ -158,17 +170,14 @@ public class AddRecipeDialogue extends DialogFragment {
             }
         }
 
-        //add next horizontal layout and elements.
-
-        //TODO: ADD LAYOUT PARAMS FOR EACH VIEW FOR PROPER SPACING
-
         parent = new LinearLayout(getContext());
 
         EditText amountInput = new EditText(getContext());
+        LinearLayout.LayoutParams amountInputLayoutParams = new LinearLayout.LayoutParams(amountWidth, amountHeight);
+        amountInput.setLayoutParams(amountInputLayoutParams);
+        amountInput.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
-        amountInput.setWidth(75 * (int)den);
-        amountInput.setHeight(50 * (int)den);
-
+        ViewGroup.LayoutParams spinnerLayoutParams = new ViewGroup.LayoutParams(spinWidth, spinHeight);
         Spinner spin = new Spinner(getContext());
         spin.setAdapter(spinAdapter);
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -182,16 +191,17 @@ public class AddRecipeDialogue extends DialogFragment {
 
             }
         });
-
-        spin.setMinimumHeight(50 * (int)den);
-        spin.setDropDownWidth(75 * (int)den);
+        spin.setLayoutParams(spinnerLayoutParams);
 
         EditText ingredientNameInput = new EditText(getContext());
-        ingredientNameInput.setWidth(150 * (int)den);
-        ingredientNameInput.setHeight(50 * (int)den);
+        ViewGroup.LayoutParams ingredientLayoutParams = new ViewGroup.LayoutParams(nameWidth, nameHeight);
+        ingredientNameInput.setLayoutParams(ingredientLayoutParams);
+
+        ViewGroup.LayoutParams buttonParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         Button addButton = new Button(getContext());
         addButton.setText("Add");
+        addButton.setLayoutParams(buttonParams);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

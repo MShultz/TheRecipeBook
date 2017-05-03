@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="rstead.bgoff.mshultz.therecipebook">
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".GlobalHelper"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="rstead.bgoff.mshultz.therecipebook.GlobalHelper">
+        android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,8 +22,11 @@
         <activity
             android:name=".RecipeDetailActivity"
             android:label="@string/title_activity_recipe_view"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".InspirationActivity"
+            android:label="@string/title_activity_inspiration"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

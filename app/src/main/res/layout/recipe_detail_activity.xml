@@ -37,6 +37,12 @@
                 android:text="TextView" />
 
             <TextView
+                android:id="@+id/ingredient_display"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
                 android:id="@+id/directions_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,6 +64,7 @@
                 android:id="@+id/del_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="onDeleteRecipe"
                 android:text="Delete Recipe" />
 
         </LinearLayout>

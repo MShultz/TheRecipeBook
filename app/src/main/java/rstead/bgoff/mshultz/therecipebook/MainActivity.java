@@ -33,8 +33,12 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.fragment_main);
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
+        refreshRecipes();
+    }
+
+    private void refreshRecipes() {
         ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
@@ -93,8 +97,13 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         AddRecipeDialogue dialogue = (AddRecipeDialogue) diagFrag;
         Recipe newRecipe = dialogue.createRecipe();
         recipeDB.addRecipe(newRecipe);
-        ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
-        initRecipes();
+        refreshRecipes();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        refreshRecipes();
     }
 
     private void sendToRecipeView(View view) {
