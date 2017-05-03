@@ -92,7 +92,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
     public void onDoneClick(DialogFragment diagFrag) {
         AddRecipeDialogue dialogue = (AddRecipeDialogue) diagFrag;
         Recipe newRecipe = dialogue.createRecipe();
-        recipeDB.addRecipe(newRecipe);
+        recipeDB.addRecipe(newRecipe, false);
         refreshRecipes();
     }
 
