@@ -1,5 +1,6 @@
 package rstead.bgoff.mshultz.therecipebook;
 
+import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -67,7 +68,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
         Recipe retrievedRecipe = dbHandler.getRecipe(getIntent().getIntExtra(MainActivity.EXTRA_ID, 1), getIntent().getBooleanExtra("isWeb", false));
 
         if(getIntent().getBooleanExtra("isWeb", false)){
-            findViewById(R.id.edit_button).setVisibility(View.GONE);
             findViewById(R.id.del_button).setVisibility(View.GONE);
 
             try {
@@ -75,6 +75,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
             }catch(Exception e){};
             findViewById(R.id.recipe_Image).setVisibility(View.VISIBLE);
             ((TextView)findViewById(R.id.recipe_name)).setGravity(Gravity.CENTER);
+            findViewById(R.id.add_to_local).setVisibility(View.VISIBLE);
         }
         showDetails(retrievedRecipe);
 
@@ -120,6 +121,12 @@ public class RecipeDetailActivity extends AppCompatActivity {
     public void onDeleteRecipe(View view){
         dbHandler.deleteRecipe(getIntent().getIntExtra(MainActivity.EXTRA_ID, 0));
         finish();
+    }
+
+
+    public void onAddToDB(View view){
+        Recipe recipe = dbHandler.getRecipe(((Activity)view.getContext()).getIntent().getIntExtra(MainActivity.EXTRA_ID, 1), true);
+        dbHandler.addRecipe(recipe, false);
     }
 
 }

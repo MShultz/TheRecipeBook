@@ -117,10 +117,11 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/edit_button"
+                android:id="@+id/add_to_local"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Edit Recipe"
+                android:onClick="onAddToDB"
+                android:text="Add to Local"
                 android:visibility="gone" />
 
             <Button

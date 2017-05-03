@@ -32,6 +32,10 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_main);
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
+        resetRecipes();
+    }
+
+    private void resetRecipes() {
         ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
@@ -96,8 +100,13 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         AddRecipeDialogue dialogue = (AddRecipeDialogue) diagFrag;
         Recipe newRecipe = dialogue.createRecipe();
         recipeDB.addRecipe(newRecipe, false);
-        ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
-        initRecipes();
+        resetRecipes();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();;
+        resetRecipes();
     }
 
     private void sendToRecipeView(View view) {
