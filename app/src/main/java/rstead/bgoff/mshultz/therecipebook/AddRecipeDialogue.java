@@ -40,8 +40,6 @@ public class AddRecipeDialogue extends DialogFragment {
 
     private String name, imageLink, ingredients, directions, notes, ingredientName, ingredientAmount, amountType;
 
-        imageLink = null;
-        return new Recipe(name, imageLink, ingredients, directions, notes, null);
     public Recipe createRecipe(){
         setProps();
         //BOI THIS IS NEEDS TO NOT BE NULL OR IT MIGHT DIE LATER.
@@ -85,7 +83,7 @@ public class AddRecipeDialogue extends DialogFragment {
         name = ((TextView)activity.findViewById(R.id.name_entry)).getText().toString();
         directions = ((TextView)activity.findViewById(R.id.direction_entry)).getText().toString();
         notes = ((TextView)activity.findViewById(R.id.notes_entry)).getText().toString();
-        imageLink = "Custom";
+        imageLink = null;
         //Create new ingredient class, call toString for ingredients
         ingredients = "Not implemented";
     }
@@ -99,11 +97,6 @@ public class AddRecipeDialogue extends DialogFragment {
         spinAdapter.add("pt");
         spinAdapter.add("pinch");
         spinAdapter.add("N/A");
-    }
-
-    public Recipe createRecipe(){
-        setProps();
-        return new Recipe(name, imageLink, ingredients, directions, notes);
     }
 
     public void onAddIngredient(View view){
