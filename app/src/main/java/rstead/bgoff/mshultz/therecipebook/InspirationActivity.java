@@ -82,7 +82,7 @@ public class InspirationActivity extends AppCompatActivity {
             recipe = new RecipeView(this);
             recipe.setLayoutParams(recipeLP);
 
-            recipe.setContent(recipes.get(i).getName());
+            recipe.setContent(recipes.get(i).getName().trim());
             try {
                 recipe.setsrcImage(new BitmapDrawable(new WebImage().execute(recipes.get(i).getImageLink()).get()));
             }catch(Exception e){

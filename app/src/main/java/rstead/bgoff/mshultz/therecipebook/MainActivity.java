@@ -73,7 +73,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
             recipe = new RecipeView(this);
             recipe.setLayoutParams(recipeLP);
 
-            recipe.setContent(recipes.get(i).getName());
+            recipe.setContent(recipes.get(i).getName().trim());
 
             recipe.setRecipeKey(recipes.get(i).getId());
             recipe.setIsWeb(false);
