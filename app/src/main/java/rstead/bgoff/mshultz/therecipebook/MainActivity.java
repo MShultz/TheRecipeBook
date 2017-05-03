@@ -3,6 +3,7 @@ package rstead.bgoff.mshultz.therecipebook;
 import android.annotation.TargetApi;
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
@@ -21,8 +23,6 @@ import java.util.regex.Pattern;
 @TargetApi(25)
 public class MainActivity extends FragmentActivity implements AddRecipeDialogue.AddRecipeListener {
     DatabaseHandler recipeDB;
-    private static final String EXTRA_IMAGE = "rstead.bgoff.mshultz.therecipebook.IMAGE";
-    private static final String EXTRA_LINK = "rstead.bgoff.mshultz.therecipebook.LINK";
     public static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
     private final String COMPLETE_PATTERN = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\" (?!alt=\"Cook\").+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
     private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
@@ -36,6 +36,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         setContentView(R.layout.activity_main);
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
         ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
+        ArrayList<Recipe> recipes = createRecipesFromHomePage();
         initRecipes();
     }
 
@@ -99,7 +100,6 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
 
     private void sendToRecipeView(View view) {
         RecipeView recipe = (RecipeView) view;
-        Log.e("RECIPE ID", recipe.getRecipeKey() + "");
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putExtra(EXTRA_ID, recipe.getRecipeKey());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -119,16 +119,14 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         ArrayList<Recipe> recipes = new ArrayList<>();
         try {
             StringBuilder pageContent = new StringBuilder().append(new DownloadMaterial().execute("http://allrecipes.com").get());
-            Log.i("Content Downloading", "Downloading...");
 
             Pattern regexPattern = Pattern.compile(COMPLETE_PATTERN);
             Matcher matcher = regexPattern.matcher(pageContent.toString());
 
             DownloadMaterial singlePageMaterial;
             while (matcher.find()) {
-                String queryString = matcher.group(3);
                 singlePageMaterial = new DownloadMaterial();
-                String singlePageContent = singlePageMaterial.execute("http://allrecipes.com" + queryString).get();
+                String singlePageContent = singlePageMaterial.execute("http://allrecipes.com" + matcher.group(3)).get();
 
                 recipes.add(new Recipe(matcher.group(2),
                         matcher.group(1),
@@ -136,7 +134,6 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
                         getDirectionsStringFromPage(singlePageContent),
                         getTipsStringFromPage(singlePageContent), new Date().toString()));
             }
-            Log.i("ContentDownloading", "Done!");
         } catch (InterruptedException | ExecutionException e) {
             Log.e("Parse Error!", e.toString());
         }
@@ -175,7 +172,6 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         Pattern tipPattern = Pattern.compile(TIPS_REGEX);
         Matcher tipsMatcher = tipPattern.matcher(pageContent);
 
-        ArrayList<String> tips = new ArrayList<>();
         StringBuilder tipString = new StringBuilder();
         while (tipsMatcher.find()) {
             tipString.append(tipsMatcher.group(1));

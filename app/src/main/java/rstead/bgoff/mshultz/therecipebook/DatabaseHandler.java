@@ -23,7 +23,6 @@ public class DatabaseHandler {
     private final String DATE_COL = "dateadded";
     private SQLiteDatabase recipeBookDatabase;
     private Cursor cursor;
-    private int name, ingredients, description, notes, imageLink, id, dateCreated;
 
 
     public DatabaseHandler(SQLiteDatabase recipeBookDatabase) {
@@ -59,14 +58,12 @@ public class DatabaseHandler {
 
     public ArrayList<Recipe> getUserRecipes() {
         cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + USER_TABLE, null);
-        ArrayList<Recipe> list = populateRecipeList(cursor);
-        return list;
+        return populateRecipeList(cursor);
     }
 
     public ArrayList<Recipe> getWebRecipes() {
         cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + WEB_TABLE, null);
-        ArrayList<Recipe> list = populateRecipeList(cursor);
-        return list;
+        return populateRecipeList(cursor);
     }
 
     public ArrayList<Recipe> populateRecipeList(Cursor cursor){
@@ -81,13 +78,13 @@ public class DatabaseHandler {
     }
 
     private Recipe createRecipe(Cursor cursor) {
-            id = cursor.getColumnIndex(PK_ID);
-            name = cursor.getColumnIndex(NAME_COL);
-            imageLink = cursor.getColumnIndex(IMAGE_COL);
-            ingredients = cursor.getColumnIndex(INGREDIENTS_COL);
-            description = cursor.getColumnIndex(DESCRIPTION_COL);
-            notes = cursor.getColumnIndex(NOTES_COL);
-            dateCreated = cursor.getColumnIndex(DATE_COL);
+            int id = cursor.getColumnIndex(PK_ID);
+            int name = cursor.getColumnIndex(NAME_COL);
+            int imageLink = cursor.getColumnIndex(IMAGE_COL);
+            int ingredients = cursor.getColumnIndex(INGREDIENTS_COL);
+            int description = cursor.getColumnIndex(DESCRIPTION_COL);
+            int notes = cursor.getColumnIndex(NOTES_COL);
+            int dateCreated = cursor.getColumnIndex(DATE_COL);
             return new Recipe(Integer.parseInt(cursor.getString(id)),
                     cursor.getString(name),
                     cursor.getString(imageLink),
