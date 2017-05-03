@@ -3,6 +3,7 @@ package rstead.bgoff.mshultz.therecipebook;
 import android.annotation.TargetApi;
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
@@ -20,21 +22,16 @@ import java.util.regex.Pattern;
 
 @TargetApi(25)
 public class MainActivity extends FragmentActivity implements AddRecipeDialogue.AddRecipeListener {
-    DatabaseHandler recipeDB;
-
-    private static final String EXTRA_IMAGE = "rstead.bgoff.mshultz.therecipebook.IMAGE";
-    private static final String EXTRA_LINK = "rstead.bgoff.mshultz.therecipebook.LINK";
+    private DatabaseHandler recipeDB;
     public static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_main);
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
-        refreshRecipes();
-    }
-
-    private void refreshRecipes() {
         ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
@@ -73,7 +70,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
             recipe = new RecipeView(this);
             recipe.setLayoutParams(recipeLP);
 
-            recipe.setContent(recipes.get(i).getName().trim());
+            recipe.setContent(recipes.get(i).getName());
 
             recipe.setRecipeKey(recipes.get(i).getId());
             recipe.setIsWeb(false);
@@ -93,24 +90,12 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         AddRecipeDialogue dialogue = (AddRecipeDialogue) diagFrag;
         Recipe newRecipe = dialogue.createRecipe();
         recipeDB.addRecipe(newRecipe, false);
-        refreshRecipes();
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        refreshRecipes();
-    }
-
-    public void goToInspirations(View view){
-        Intent intent = new Intent(this, InspirationActivity.class);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
+        ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
+        initRecipes();
     }
 
     private void sendToRecipeView(View view) {
         RecipeView recipe = (RecipeView) view;
-        Log.e("RECIPE ID", recipe.getRecipeKey() + "");
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putExtra(EXTRA_ID, recipe.getRecipeKey());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -125,5 +110,4 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
     public void setRecipeDB(DatabaseHandler recipeDB) {
         this.recipeDB = recipeDB;
     }
-
 }

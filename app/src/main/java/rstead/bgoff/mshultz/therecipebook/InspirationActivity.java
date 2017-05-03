@@ -132,16 +132,14 @@ public class InspirationActivity extends AppCompatActivity {
         ArrayList<Recipe> recipes = new ArrayList<>();
         try {
             StringBuilder pageContent = new StringBuilder().append(new DownloadMaterial().execute("http://allrecipes.com").get());
-            Log.i("Content Downloading", "Downloading...");
 
             Pattern regexPattern = Pattern.compile(COMPLETE_PATTERN);
             Matcher matcher = regexPattern.matcher(pageContent.toString());
 
             DownloadMaterial singlePageMaterial;
             while (matcher.find()) {
-                String queryString = matcher.group(3);
                 singlePageMaterial = new DownloadMaterial();
-                String singlePageContent = singlePageMaterial.execute("http://allrecipes.com" + queryString).get();
+                String singlePageContent = singlePageMaterial.execute("http://allrecipes.com" + matcher.group(3)).get();
 
                 recipes.add(new Recipe(matcher.group(2),
                         matcher.group(1),
@@ -149,7 +147,6 @@ public class InspirationActivity extends AppCompatActivity {
                         getDirectionsStringFromPage(singlePageContent),
                         getTipsStringFromPage(singlePageContent), new SimpleDateFormat("MM/dd/yy HH:mm:ss").format(new Date())));
             }
-            Log.i("ContentDownloading", "Done!");
         } catch (InterruptedException | ExecutionException e) {
             Log.e("Parse Error!", e.toString());
         }
@@ -158,7 +155,9 @@ public class InspirationActivity extends AppCompatActivity {
         return recipes;
     }
 
+
     private String getIngredientsStringFromPage(String pageContent) {
+        Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
         Matcher ingredientMatcher = ingredientPattern.matcher(pageContent);
 
         StringBuilder ingredientString = new StringBuilder();
@@ -178,7 +177,9 @@ public class InspirationActivity extends AppCompatActivity {
         return ingredientString.toString();
     }
 
+
     private String getDirectionsStringFromPage(String pageContent) {
+        Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
         Matcher directionsMatcher = directionPattern.matcher(pageContent);
 
         StringBuilder directionString = new StringBuilder();
@@ -191,6 +192,7 @@ public class InspirationActivity extends AppCompatActivity {
     }
 
     private String getTipsStringFromPage(String pageContent) {
+        Pattern tipPattern = Pattern.compile(TIPS_REGEX);
         Matcher tipsMatcher = tipPattern.matcher(pageContent);
         StringBuilder tipString = new StringBuilder();
         while (tipsMatcher.find()) {
