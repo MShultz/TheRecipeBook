@@ -42,7 +42,8 @@ public class AddRecipeDialogue extends DialogFragment {
 
     public Recipe createRecipe(){
         setProps();
-        return new Recipe(name, imageLink, ingredients, directions, notes);
+        //BOI THIS IS NEEDS TO NOT BE NULL OR IT MIGHT DIE LATER.
+        return new Recipe(name, imageLink, ingredients, directions, notes, null);
     }
 
     @Override

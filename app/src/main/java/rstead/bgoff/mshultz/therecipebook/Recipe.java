@@ -76,11 +76,7 @@ public class Recipe {
         this.notes = notes;
     }
 
-    public String getDateCreated() {
-        return dateCreated;
-    }
+    public String getDateCreated() { return dateCreated;}
 
-    public void setDateCreated(String dateCreated) {
-        this.dateCreated = dateCreated;
-    }
+    public void setDateCreated(String dateCreated) { this.dateCreated = dateCreated;}
 }

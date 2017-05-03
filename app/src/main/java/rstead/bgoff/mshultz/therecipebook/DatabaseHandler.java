@@ -23,7 +23,7 @@ public class DatabaseHandler {
     private final String DATE_COL = "dateadded";
     private SQLiteDatabase recipeBookDatabase;
     private Cursor cursor;
-    private int name, ingredients, description, notes, imageLink, id;
+    private int name, ingredients, description, notes, imageLink, id, dateCreated;
 
 
     public DatabaseHandler(SQLiteDatabase recipeBookDatabase) {
@@ -87,12 +87,14 @@ public class DatabaseHandler {
             ingredients = cursor.getColumnIndex(INGREDIENTS_COL);
             description = cursor.getColumnIndex(DESCRIPTION_COL);
             notes = cursor.getColumnIndex(NOTES_COL);
+            dateCreated = cursor.getColumnIndex(DATE_COL);
             return new Recipe(Integer.parseInt(cursor.getString(id)),
                     cursor.getString(name),
                     cursor.getString(imageLink),
                     cursor.getString(ingredients),
                     cursor.getString(description),
-                    cursor.getString(notes));
+                    cursor.getString(notes),
+                    cursor.getString(dateCreated));
     }
 
     public void addRecipe(Recipe recipe) {
@@ -107,6 +109,7 @@ public class DatabaseHandler {
         recipeValues.put(INGREDIENTS_COL, recipe.getIngredients());
         recipeValues.put(DESCRIPTION_COL, recipe.getDescription());
         recipeValues.put(NOTES_COL, recipe.getNotes());
+        recipeValues.put(DATE_COL, recipe.getDateCreated());
         return recipeValues;
     }
 
