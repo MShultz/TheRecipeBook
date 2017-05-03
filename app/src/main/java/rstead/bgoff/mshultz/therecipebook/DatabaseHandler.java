@@ -25,6 +25,13 @@ public class DatabaseHandler {
     private final String NOTES_COL = "notes";
     private final String IMAGE_COL = "imageLink";
     private final String DATE_COL = "dateadded";
+    private final int ID = 0;
+    private final int NAME = 1;
+    private final int IMAGE = 2;
+    private final int INGREDIENT = 3;
+    private final int DESCRIPTION = 4;
+    private final int NOTES = 5;
+    private final int DATE = 6;
     private final long DATABASE_HOURS_THRESHOLD = 24;
     private final long MILLISECONDS_IN_HOUR = 3600000;
     private SQLiteDatabase recipeBookDatabase;
@@ -84,20 +91,14 @@ public class DatabaseHandler {
     }
 
     private Recipe createRecipe(Cursor cursor) {
-            int id = cursor.getColumnIndex(PK_ID);
-            int name = cursor.getColumnIndex(NAME_COL);
-            int imageLink = cursor.getColumnIndex(IMAGE_COL);
-            int ingredients = cursor.getColumnIndex(INGREDIENTS_COL);
-            int description = cursor.getColumnIndex(DESCRIPTION_COL);
-            int notes = cursor.getColumnIndex(NOTES_COL);
-            int dateCreated = cursor.getColumnIndex(DATE_COL);
-            return new Recipe(Integer.parseInt(cursor.getString(id)),
-                    cursor.getString(name),
-                    cursor.getString(imageLink),
-                    cursor.getString(ingredients),
-                    cursor.getString(description),
-                    cursor.getString(notes),
-                    cursor.getString(dateCreated));
+
+            return new Recipe(Integer.parseInt(cursor.getString(ID)),
+                    cursor.getString(NAME),
+                    cursor.getString(IMAGE),
+                    cursor.getString(INGREDIENT),
+                    cursor.getString(DESCRIPTION),
+                    cursor.getString(NOTES),
+                    cursor.getString(DATE));
     }
 
     public void addRecipe(Recipe recipe, boolean isWeb) {
@@ -139,21 +140,20 @@ public class DatabaseHandler {
     }
 
     public Recipe getRecipe(int pk, boolean isWeb) {
-        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + (isWeb ? WEB_TABLE : USER_TABLE) + " WHERE " + PK_ID + " = " + pk, null);
+        cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + (isWeb ? WEB_TABLE : USER_TABLE) + " WHERE " + PK_ID + " = " + pk, null);
         cursor.moveToFirst();
         return createRecipe(cursor);
     }
 
     public boolean shouldLoadFromDatabase(){
-        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + WEB_TABLE, null);
+        cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + WEB_TABLE, null);
         boolean shouldLoad = false;
         if (cursor.getCount() > 0) {
             try{
                 cursor.moveToFirst();
-                Date d = new Date();
-                dateCreated = cursor.getColumnIndex(DATE_COL);
-                Date lastDate = new SimpleDateFormat("MM/dd/yy HH:mm:ss").parse(cursor.getString(dateCreated));
-                long hoursPassed = (d.getTime() - lastDate.getTime()) / MILLISECONDS_IN_HOUR;
+
+                Date lastDate = new SimpleDateFormat("MM/dd/yy HH:mm:ss").parse(cursor.getString(DATE));
+                long hoursPassed = (new Date().getTime() - lastDate.getTime()) / MILLISECONDS_IN_HOUR;
                 Log.e("HOURS", hoursPassed + "");
                 if(hoursPassed < DATABASE_HOURS_THRESHOLD){
                     shouldLoad = true;

@@ -22,21 +22,17 @@ import java.util.regex.Pattern;
 
 @TargetApi(25)
 public class MainActivity extends FragmentActivity implements AddRecipeDialogue.AddRecipeListener {
-    DatabaseHandler recipeDB;
+    private DatabaseHandler recipeDB;
     public static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
-    private final String COMPLETE_PATTERN = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\" (?!alt=\"Cook\").+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
-    private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
-    private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
-    private final String TIPS_REGEX = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.fragment_main);
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
         ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
-        ArrayList<Recipe> recipes = createRecipesFromHomePage();
         initRecipes();
     }
 
@@ -93,7 +89,7 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
     public void onDoneClick(DialogFragment diagFrag) {
         AddRecipeDialogue dialogue = (AddRecipeDialogue) diagFrag;
         Recipe newRecipe = dialogue.createRecipe();
-        recipeDB.addRecipe(newRecipe);
+        recipeDB.addRecipe(newRecipe, false);
         ((LinearLayout) findViewById(R.id.mainLayout)).removeAllViews();
         initRecipes();
     }
@@ -113,72 +109,5 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
 
     public void setRecipeDB(DatabaseHandler recipeDB) {
         this.recipeDB = recipeDB;
-    }
-
-    public ArrayList<Recipe> createRecipesFromHomePage() {
-        ArrayList<Recipe> recipes = new ArrayList<>();
-        try {
-            StringBuilder pageContent = new StringBuilder().append(new DownloadMaterial().execute("http://allrecipes.com").get());
-
-            Pattern regexPattern = Pattern.compile(COMPLETE_PATTERN);
-            Matcher matcher = regexPattern.matcher(pageContent.toString());
-
-            DownloadMaterial singlePageMaterial;
-            while (matcher.find()) {
-                singlePageMaterial = new DownloadMaterial();
-                String singlePageContent = singlePageMaterial.execute("http://allrecipes.com" + matcher.group(3)).get();
-
-                recipes.add(new Recipe(matcher.group(2),
-                        matcher.group(1),
-                        getIngredientsStringFromPage(singlePageContent),
-                        getDirectionsStringFromPage(singlePageContent),
-                        getTipsStringFromPage(singlePageContent), new Date().toString()));
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            Log.e("Parse Error!", e.toString());
-        }
-
-
-        return recipes;
-    }
-
-    private String getIngredientsStringFromPage(String pageContent) {
-        Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
-        Matcher ingredientMatcher = ingredientPattern.matcher(pageContent);
-
-        StringBuilder ingredientString = new StringBuilder();
-        while (ingredientMatcher.find()) {
-            ingredientString.append(ingredientMatcher.group(1));
-            ingredientString.append(",");
-        }
-        ingredientString.setLength(ingredientString.length() - 1);
-        return ingredientString.toString();
-    }
-
-    private String getDirectionsStringFromPage(String pageContent) {
-        Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
-        Matcher directionsMatcher = directionPattern.matcher(pageContent);
-
-        StringBuilder directionString = new StringBuilder();
-        while (directionsMatcher.find()) {
-            directionString.append(directionsMatcher.group(1));
-            directionString.append("\n");
-        }
-        directionString.setLength(directionString.length() - 1);
-        return directionString.toString();
-    }
-
-    private String getTipsStringFromPage(String pageContent) {
-        Pattern tipPattern = Pattern.compile(TIPS_REGEX);
-        Matcher tipsMatcher = tipPattern.matcher(pageContent);
-
-        StringBuilder tipString = new StringBuilder();
-        while (tipsMatcher.find()) {
-            tipString.append(tipsMatcher.group(1));
-            tipString.append("\n");
-        }
-        if (tipString.length() > 0)
-            tipString.setLength(tipString.length() - 1);
-        return tipString.toString();
     }
 }
