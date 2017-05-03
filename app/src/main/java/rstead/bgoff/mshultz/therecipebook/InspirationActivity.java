@@ -32,9 +32,11 @@ public class InspirationActivity extends AppCompatActivity {
     private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
     private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
     private final String TIPS_REGEX = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
+    private final String INGREDIENT_SPLIT_REGEX = "([\\d \\/]*) (\\w*)";
     private Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
     private Pattern tipPattern = Pattern.compile(TIPS_REGEX);
-    Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
+    private Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
+    private Pattern ingredientSplitPattern = Pattern.compile(INGREDIENT_SPLIT_REGEX);
 
     DatabaseHandler dbHandler;
 
@@ -71,12 +73,14 @@ public class InspirationActivity extends AppCompatActivity {
 
         RecipeView recipe;
         RelativeLayout.LayoutParams recipeLP = new RelativeLayout.LayoutParams(recipeSize, recipeSize);
+
         recipeLP.setMargins(marg, marg, marg, marg);
 
         for (int i = 0; i < recipes.size(); i++) {
             //every two recipes, add a new LinearLayout
             if (i % 2 == 0) {
                 currTab = new LinearLayout(this);
+                currTab.setLayoutParams(currTabParams);
                 currTab.setId(tabCount++);
                 mainParent.addView(currTab);
             }
@@ -159,7 +163,15 @@ public class InspirationActivity extends AppCompatActivity {
 
         StringBuilder ingredientString = new StringBuilder();
         while (ingredientMatcher.find()) {
-            ingredientString.append(ingredientMatcher.group(1));
+            Matcher ingredientSplitMatcher = ingredientSplitPattern.matcher(ingredientMatcher.group(1));
+            while(ingredientSplitMatcher.find()){
+                for(int i = 0; i < ingredientMatcher.groupCount(); i++){
+                    ingredientString.append(ingredientSplitMatcher.group(i));
+                    if(i == 1 || i == 2){
+                        ingredientString.append(":");
+                    }
+                }
+            }
             ingredientString.append(",");
         }
         ingredientString.setLength(ingredientString.length() - 1);
