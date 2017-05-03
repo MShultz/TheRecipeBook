@@ -10,7 +10,7 @@ public class Ingredient {
     Fraction amount;
     private final int AMOUNT_INDEX = 0;
     private final int AMOUNT_TYPE_INDEX = 1;
-    private final int NAME_INDEX = 3;
+    private final int NAME_INDEX = 2;
 
     public Ingredient(String name, Fraction amount, String amountType){
         this.setName(name);
