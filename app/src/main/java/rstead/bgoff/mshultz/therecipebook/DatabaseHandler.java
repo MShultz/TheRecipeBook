@@ -91,7 +91,6 @@ public class DatabaseHandler {
     }
 
     private Recipe createRecipe(Cursor cursor) {
-
             return new Recipe(Integer.parseInt(cursor.getString(ID)),
                     cursor.getString(NAME),
                     cursor.getString(IMAGE),
@@ -140,7 +139,6 @@ public class DatabaseHandler {
     }
 
     public Recipe getRecipe(int pk, boolean isWeb) {
-        cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + (isWeb ? WEB_TABLE : USER_TABLE) + " WHERE " + PK_ID + " = " + pk, null);
         cursor.moveToFirst();
         return createRecipe(cursor);
     }
