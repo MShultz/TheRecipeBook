@@ -39,6 +39,31 @@ public class Fraction {
         setDenominator(denominator);
     }
 
+    public Fraction(String data){
+        data = data.trim();
+        int wholeNum = 0;
+        int numerator = 0;
+        int denominator = 1;
+        if(data.contains(" ")){
+            String[] wholeSplit = data.split(" ");
+            wholeNum = Integer.parseInt(wholeSplit[0].trim());
+            String[] fracSplit = wholeSplit[1].trim().split("/");
+            numerator = Integer.parseInt(fracSplit[0].trim());
+            denominator = Integer.parseInt(fracSplit[1].trim());
+        }else{
+            if(data.contains("/")){
+                String[] fracSplit = data.trim().split("/");
+                numerator = Integer.parseInt(fracSplit[0].trim());
+                denominator = Integer.parseInt(fracSplit[1].trim());
+            }else{
+                wholeNum = Integer.parseInt(data.trim());
+            }
+        }
+        setWholeNumber(wholeNum);
+        setNumerator(numerator);
+        setDenominator(denominator);
+    }
+
     public void reduce() {
         int gcd = gcd(getNumerator(), getDenominator());
         setNumerator(getNumerator() / gcd);
