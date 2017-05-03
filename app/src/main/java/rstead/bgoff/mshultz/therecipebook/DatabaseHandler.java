@@ -108,11 +108,13 @@ public class DatabaseHandler {
 
     }
 
-    public void resetWebRecipes(ArrayList<Recipe> recipes){
+    public ArrayList<Recipe> resetWebRecipes(ArrayList<Recipe> recipes){
         recipeBookDatabase.delete(WEB_TABLE, null, null);
         for(Recipe recipe : recipes){
+            Log.e("WEBRECIPELOG:", recipe.getImageLink());
             addRecipe(recipe);
         }
+        return getWebRecipes();
     }
 
     private ContentValues getRecipeContentValues(Recipe recipe) {
@@ -139,8 +141,8 @@ public class DatabaseHandler {
         recipeBookDatabase.delete(USER_TABLE, null, null);
     }
 
-    public Recipe getRecipe(int pk) {
-        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + USER_TABLE + " WHERE " + PK_ID + " = " + pk, null);
+    public Recipe getRecipe(int pk, boolean isWeb) {
+        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + (isWeb ? WEB_TABLE : USER_TABLE) + " WHERE " + PK_ID + " = " + pk, null);
         cursor.moveToFirst();
         return createRecipe(cursor);
     }

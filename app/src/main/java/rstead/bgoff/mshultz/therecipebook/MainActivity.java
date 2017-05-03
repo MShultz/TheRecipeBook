@@ -21,14 +21,10 @@ import java.util.regex.Pattern;
 @TargetApi(25)
 public class MainActivity extends FragmentActivity implements AddRecipeDialogue.AddRecipeListener {
     DatabaseHandler recipeDB;
+
     private static final String EXTRA_IMAGE = "rstead.bgoff.mshultz.therecipebook.IMAGE";
     private static final String EXTRA_LINK = "rstead.bgoff.mshultz.therecipebook.LINK";
     public static final String EXTRA_ID = "rstead.bgoff.mshultz.therecipebook.ID";
-    private final String COMPLETE_PATTERN = "(?s)grid-col__rec-image\" data-lazy-load data-original-src=\"([\\w:\\-\\/\\.\\?\\=\\&\\;]*)\" (?!alt=\"Cook\").+?<h3 class=\"grid-col__h3 grid-col__h3--recipe-grid\">\\s*([\\w\\d'\\s\\-]*).+?<a href=\"(\\/recipe[\\w\\d\\/\\-]*)\"";
-    private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
-    private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
-    private final String TIPS_REGEX = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +102,12 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         refreshRecipes();
     }
 
+    public void goToInspirations(View view){
+        Intent intent = new Intent(this, InspirationActivity.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
+
     private void sendToRecipeView(View view) {
         RecipeView recipe = (RecipeView) view;
         Log.e("RECIPE ID", recipe.getRecipeKey() + "");
@@ -124,84 +126,4 @@ public class MainActivity extends FragmentActivity implements AddRecipeDialogue.
         this.recipeDB = recipeDB;
     }
 
-    public ArrayList<Recipe> loadInspirations(){
-        ArrayList<Recipe> recipes;
-        boolean shouldLoad = recipeDB.shouldLoadFromDatabase();
-        if(shouldLoad){
-            recipes = recipeDB.getWebRecipes();
-        }else{
-            recipes = createRecipesFromHomePage();
-        }
-        return recipes;
-    }
-
-    public ArrayList<Recipe> createRecipesFromHomePage() {
-        ArrayList<Recipe> recipes = new ArrayList<>();
-        try {
-            StringBuilder pageContent = new StringBuilder().append(new DownloadMaterial().execute("http://allrecipes.com").get());
-            Log.i("Content Downloading", "Downloading...");
-
-            Pattern regexPattern = Pattern.compile(COMPLETE_PATTERN);
-            Matcher matcher = regexPattern.matcher(pageContent.toString());
-
-            DownloadMaterial singlePageMaterial;
-            while (matcher.find()) {
-                String queryString = matcher.group(3);
-                singlePageMaterial = new DownloadMaterial();
-                String singlePageContent = singlePageMaterial.execute("http://allrecipes.com" + queryString).get();
-
-                recipes.add(new Recipe(matcher.group(2),
-                        matcher.group(1),
-                        getIngredientsStringFromPage(singlePageContent),
-                        getDirectionsStringFromPage(singlePageContent),
-                        getTipsStringFromPage(singlePageContent), new Date().toString()));
-            }
-            Log.i("ContentDownloading", "Done!");
-        } catch (InterruptedException | ExecutionException e) {
-            Log.e("Parse Error!", e.toString());
-        }
-        recipeDB.resetWebRecipes(recipes);
-
-        return recipes;
-    }
-
-    private String getIngredientsStringFromPage(String pageContent) {
-        Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
-        Matcher ingredientMatcher = ingredientPattern.matcher(pageContent);
-
-        StringBuilder ingredientString = new StringBuilder();
-        while (ingredientMatcher.find()) {
-            ingredientString.append(ingredientMatcher.group(1));
-            ingredientString.append(",");
-        }
-        ingredientString.setLength(ingredientString.length() - 1);
-        return ingredientString.toString();
-    }
-
-    private String getDirectionsStringFromPage(String pageContent) {
-        Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
-        Matcher directionsMatcher = directionPattern.matcher(pageContent);
-
-        StringBuilder directionString = new StringBuilder();
-        while (directionsMatcher.find()) {
-            directionString.append(directionsMatcher.group(1));
-            directionString.append("\n");
-        }
-        directionString.setLength(directionString.length() - 1);
-        return directionString.toString();
-    }
-
-    private String getTipsStringFromPage(String pageContent) {
-        Pattern tipPattern = Pattern.compile(TIPS_REGEX);
-        Matcher tipsMatcher = tipPattern.matcher(pageContent);
-
-        StringBuilder tipString = new StringBuilder();
-        while (tipsMatcher.find()) {
-            tipString.append(tipsMatcher.group(1));
-            tipString.append("\n");
-        }
-        if (tipString.length() > 0)
-            tipString.setLength(tipString.length() - 1);
-        return tipString.toString();
-    }
 }

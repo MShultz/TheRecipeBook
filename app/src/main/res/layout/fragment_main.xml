@@ -7,7 +7,7 @@
     tools:context="rstead.bgoff.mshultz.therecipebook.MainActivity">
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/button_add_recipe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
@@ -17,6 +17,18 @@
         app:backgroundTint="@color/colorAccent"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_action_add" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button_toInspirations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="25dp"
+        android:clickable="true"
+        android:onClick="goToInspirations"
+        app:backgroundTint="@color/colorAccent"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_action_heart" />
 
     <ScrollView
         android:layout_width="match_parent"

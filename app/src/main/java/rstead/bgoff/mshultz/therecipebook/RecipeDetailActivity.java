@@ -18,7 +18,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
 
-        Recipe retrievedRecipe = dbHandler.getRecipe(getIntent().getIntExtra(MainActivity.EXTRA_ID, 1));
+        Recipe retrievedRecipe = dbHandler.getRecipe(getIntent().getIntExtra(MainActivity.EXTRA_ID, 1), getIntent().getBooleanExtra("isWeb", false));
 
         showDetails(retrievedRecipe);
 
