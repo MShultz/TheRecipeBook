@@ -49,10 +49,16 @@
                 android:text="TextView" />
 
             <Button
+                android:id="@+id/edit_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Edit Recipe" />
+
+            <Button
                 android:id="@+id/del_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="Delete Recipe" />
 
         </LinearLayout>
     </ScrollView>
