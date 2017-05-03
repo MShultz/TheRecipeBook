@@ -36,7 +36,7 @@ public class AddRecipeDialogue extends DialogFragment {
         name = ((TextView)activity.findViewById(R.id.name_entry)).getText().toString();
         directions = ((TextView)activity.findViewById(R.id.direction_entry)).getText().toString();
         notes = ((TextView)activity.findViewById(R.id.notes_entry)).getText().toString();
-        imageLink = "Custom";
+        imageLink = null;
         ingredients = "Not implemented";
     }
 
