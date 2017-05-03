@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -92,6 +93,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         LinearLayout parent = (LinearLayout)findViewById(R.id.ingredients_layout);
 
         for(int i = 0; i < ingredientList.length; i++){
+            Log.e("Ingredient String", ingredientList[i]);
             String[] ingredientDetails = ingredientList[i].split(":");
             String amount = ingredientDetails[0];
             String remaining = " " + ingredientDetails[1] + " " + ingredientDetails[2];

@@ -32,7 +32,7 @@ public class InspirationActivity extends AppCompatActivity {
     private final String INGREDIENT_REGEX = "itemprop=\"ingredients\">(.+?)<\\/span>";
     private final String DIRECTION_REGEX = "recipe-directions__list--item\">(.+?)<\\/span>";
     private final String TIPS_REGEX = "(?s)Cook's Note.+?<li>(.+?)<\\/li>";
-    private final String INGREDIENT_SPLIT_REGEX = "([\\d \\/]*) (\\w*)";
+    private final String INGREDIENT_SPLIT_REGEX = "([\\d]* [\\d\\/]*|[\\d]*) (.+?[\\w\\d(),]*) (.+[\\w ,]*)";
     private Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
     private Pattern tipPattern = Pattern.compile(TIPS_REGEX);
     private Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
@@ -157,29 +157,31 @@ public class InspirationActivity extends AppCompatActivity {
 
 
     private String getIngredientsStringFromPage(String pageContent) {
-        Pattern ingredientPattern = Pattern.compile(INGREDIENT_REGEX);
         Matcher ingredientMatcher = ingredientPattern.matcher(pageContent);
 
         StringBuilder ingredientString = new StringBuilder();
         while (ingredientMatcher.find()) {
-            Matcher ingredientSplitMatcher = ingredientSplitPattern.matcher(ingredientMatcher.group(1));
-            while(ingredientSplitMatcher.find()){
-                for(int i = 0; i < ingredientMatcher.groupCount(); i++){
-                    ingredientString.append(ingredientSplitMatcher.group(i));
-                    if(i == 1 || i == 2){
-                        ingredientString.append(":");
-                    }
-                }
-            }
+            ingredientString.append(createSeparatedString(ingredientMatcher.group(1)));
             ingredientString.append(",");
         }
         ingredientString.setLength(ingredientString.length() - 1);
         return ingredientString.toString();
     }
 
+    private String createSeparatedString(String originalString){
+        Matcher ingredientStringMatcher = ingredientSplitPattern.matcher(originalString);
+        StringBuilder stringBuilder = new StringBuilder();
+        while(ingredientStringMatcher.find()){
+            stringBuilder.append(ingredientStringMatcher.group(1));
+            stringBuilder.append(":");
+            stringBuilder.append(ingredientStringMatcher.group(2).replace(",", ""));
+            stringBuilder.append(":");
+            stringBuilder.append(ingredientStringMatcher.group(3).replace(",", ""));
+        }
+        return stringBuilder.toString();
+    }
 
     private String getDirectionsStringFromPage(String pageContent) {
-        Pattern directionPattern = Pattern.compile(DIRECTION_REGEX);
         Matcher directionsMatcher = directionPattern.matcher(pageContent);
 
         StringBuilder directionString = new StringBuilder();
@@ -192,7 +194,6 @@ public class InspirationActivity extends AppCompatActivity {
     }
 
     private String getTipsStringFromPage(String pageContent) {
-        Pattern tipPattern = Pattern.compile(TIPS_REGEX);
         Matcher tipsMatcher = tipPattern.matcher(pageContent);
         StringBuilder tipString = new StringBuilder();
         while (tipsMatcher.find()) {
