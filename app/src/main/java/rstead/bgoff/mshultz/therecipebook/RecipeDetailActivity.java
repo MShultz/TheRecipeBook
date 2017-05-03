@@ -31,7 +31,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         final SeekBar recipeConverter = (SeekBar)findViewById(R.id.recipe_size_changer);
         recipeConverter.setProgress(1);
-        recipeConverter.setMax(11);
+        recipeConverter.setMax(10);
 
         this.setRecipeDB(((GlobalHelper) this.getApplication()).getRecipeDB());
         recipeConverter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -44,6 +44,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                     TextView currentAmount = ((TextView)((LinearLayout)ingredientParent.getChildAt(i)).getChildAt(0));
                     originalAmounts.add(currentAmount.getText().toString());
                     Fraction frac = new Fraction(originalAmounts.get(i));
+                    ((TextView)findViewById(R.id.changeRecipeText)).setText("Change Recipe Size (x " + progress + ")");
                     frac.scaleFraction(progress);
                     currentAmount.setText(frac.toString());
                 }
