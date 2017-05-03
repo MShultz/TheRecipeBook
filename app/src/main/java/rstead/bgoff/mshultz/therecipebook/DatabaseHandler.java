@@ -79,7 +79,7 @@ public class DatabaseHandler {
         return populateRecipeList(cursor);
     }
 
-    public ArrayList<Recipe> populateRecipeList(Cursor cursor){
+    public ArrayList<Recipe> populateRecipeList(Cursor cursor) {
         ArrayList<Recipe> list = new ArrayList<>();
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
@@ -91,13 +91,13 @@ public class DatabaseHandler {
     }
 
     private Recipe createRecipe(Cursor cursor) {
-            return new Recipe(Integer.parseInt(cursor.getString(ID)),
-                    cursor.getString(NAME),
-                    cursor.getString(IMAGE),
-                    cursor.getString(INGREDIENT),
-                    cursor.getString(DESCRIPTION),
-                    cursor.getString(NOTES),
-                    cursor.getString(DATE));
+        return new Recipe(Integer.parseInt(cursor.getString(ID)),
+                cursor.getString(NAME),
+                cursor.getString(IMAGE),
+                cursor.getString(INGREDIENT),
+                cursor.getString(DESCRIPTION),
+                cursor.getString(NOTES),
+                cursor.getString(DATE));
     }
 
     public void addRecipe(Recipe recipe, boolean isWeb) {
@@ -105,9 +105,9 @@ public class DatabaseHandler {
 
     }
 
-    public ArrayList<Recipe> resetWebRecipes(ArrayList<Recipe> recipes){
+    public ArrayList<Recipe> resetWebRecipes(ArrayList<Recipe> recipes) {
         recipeBookDatabase.delete(WEB_TABLE, null, null);
-        for(Recipe recipe : recipes){
+        for (Recipe recipe : recipes) {
             Log.e("WEBRECIPELOG:", recipe.getImageLink());
             addRecipe(recipe, true);
         }
@@ -139,24 +139,25 @@ public class DatabaseHandler {
     }
 
     public Recipe getRecipe(int pk, boolean isWeb) {
+        cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + (isWeb ? WEB_TABLE : USER_TABLE) + " WHERE " + PK_ID + " = " + pk, null);
         cursor.moveToFirst();
         return createRecipe(cursor);
     }
 
-    public boolean shouldLoadFromDatabase(){
+    public boolean shouldLoadFromDatabase() {
         cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + WEB_TABLE, null);
         boolean shouldLoad = false;
         if (cursor.getCount() > 0) {
-            try{
+            try {
                 cursor.moveToFirst();
 
                 Date lastDate = new SimpleDateFormat("MM/dd/yy HH:mm:ss").parse(cursor.getString(DATE));
                 long hoursPassed = (new Date().getTime() - lastDate.getTime()) / MILLISECONDS_IN_HOUR;
                 Log.e("HOURS", hoursPassed + "");
-                if(hoursPassed < DATABASE_HOURS_THRESHOLD){
+                if (hoursPassed < DATABASE_HOURS_THRESHOLD) {
                     shouldLoad = true;
                 }
-            }catch(ParseException e){
+            } catch (ParseException e) {
                 Log.e("ERROR STORING DATE", e.toString());
             }
         }
