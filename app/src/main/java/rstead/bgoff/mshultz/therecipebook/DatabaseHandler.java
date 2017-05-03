@@ -3,8 +3,12 @@ package rstead.bgoff.mshultz.therecipebook;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Mary on 5/1/2017.
@@ -21,6 +25,8 @@ public class DatabaseHandler {
     private final String NOTES_COL = "notes";
     private final String IMAGE_COL = "imageLink";
     private final String DATE_COL = "dateadded";
+    private final long DATABASE_HOURS_THRESHOLD = 24;
+    private final long MILLISECONDS_IN_HOUR = 3600000;
     private SQLiteDatabase recipeBookDatabase;
     private Cursor cursor;
 
@@ -94,9 +100,18 @@ public class DatabaseHandler {
                     cursor.getString(dateCreated));
     }
 
-    public void addRecipe(Recipe recipe) {
-        recipeBookDatabase.insert(recipe.getImageLink() == null ? USER_TABLE : WEB_TABLE, null, getRecipeContentValues(recipe));
+    public void addRecipe(Recipe recipe, boolean isWeb) {
+        recipeBookDatabase.insert(isWeb ? WEB_TABLE : USER_TABLE, null, getRecipeContentValues(recipe));
 
+    }
+
+    public ArrayList<Recipe> resetWebRecipes(ArrayList<Recipe> recipes){
+        recipeBookDatabase.delete(WEB_TABLE, null, null);
+        for(Recipe recipe : recipes){
+            Log.e("WEBRECIPELOG:", recipe.getImageLink());
+            addRecipe(recipe, true);
+        }
+        return getWebRecipes();
     }
 
     private ContentValues getRecipeContentValues(Recipe recipe) {
@@ -123,9 +138,30 @@ public class DatabaseHandler {
         recipeBookDatabase.delete(USER_TABLE, null, null);
     }
 
-    public Recipe getRecipe(int pk) {
-        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + USER_TABLE + " WHERE " + PK_ID + " = " + pk, null);
+    public Recipe getRecipe(int pk, boolean isWeb) {
+        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + (isWeb ? WEB_TABLE : USER_TABLE) + " WHERE " + PK_ID + " = " + pk, null);
         cursor.moveToFirst();
         return createRecipe(cursor);
+    }
+
+    public boolean shouldLoadFromDatabase(){
+        Cursor cursor = recipeBookDatabase.rawQuery("SELECT * FROM " + WEB_TABLE, null);
+        boolean shouldLoad = false;
+        if (cursor.getCount() > 0) {
+            try{
+                cursor.moveToFirst();
+                Date d = new Date();
+                dateCreated = cursor.getColumnIndex(DATE_COL);
+                Date lastDate = new SimpleDateFormat("MM/dd/yy HH:mm:ss").parse(cursor.getString(dateCreated));
+                long hoursPassed = (d.getTime() - lastDate.getTime()) / MILLISECONDS_IN_HOUR;
+                Log.e("HOURS", hoursPassed + "");
+                if(hoursPassed < DATABASE_HOURS_THRESHOLD){
+                    shouldLoad = true;
+                }
+            }catch(ParseException e){
+                Log.e("ERROR STORING DATE", e.toString());
+            }
+        }
+        return shouldLoad;
     }
 }

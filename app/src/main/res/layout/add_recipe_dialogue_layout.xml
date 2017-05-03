@@ -40,7 +40,7 @@
             android:text="Ingredients"
             android:textSize="24sp" />
 
-        <ScrollView
+        <android.support.v4.widget.NestedScrollView
             android:id="@+id/ingredient_scroller"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -95,7 +95,7 @@
                         android:text="Add" />
                 </LinearLayout>
             </LinearLayout>
-        </ScrollView>
+        </android.support.v4.widget.NestedScrollView>
 
         <EditText
             android:id="@+id/direction_entry"
